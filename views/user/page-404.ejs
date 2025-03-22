@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(to right, #eef1f6, #dde7f3);
+            height: 100vh;
+        }
+        .error-container {
+            text-align: center;
+            background: white;
+            padding: 40px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .bag-container {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 40px; /* Adds spacing so 404 doesn't hover over text */
+        }
+        .bag {
+            width: 100px;
+            height: 80px;
+            background: rgb(122, 154, 213);
+            border: 2px solid #6ea0d9;
+            border-radius: 5px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            position: relative;
+        }
+        .bag::after {
+            content: "";
+            position: absolute;
+            width: 40px;
+            height: 20px;
+            border: 3px solid #333;
+            border-color: transparent transparent #333 transparent;
+            border-radius: 50%;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .error-number {
+            font-size: 50px;
+            font-weight: bold;
+            color: #333;
+            position: absolute;
+            top: -55px; /* Moves 404 close to the bag */
+            left: 50%;
+            transform: translateX(-50%);
+        }
+    </style>
+</head>
+<body class="d-flex justify-content-center align-items-center">
+    <div class="container text-center">
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6 error-container">
+                <h3 class="fw-bold text-dark">We lost that page...</h3>
+                <p class="text-secondary">
+                    The page you are looking for was moved, removed, or might never have existed. Here are some helpful ideas:
+                </p>
+                <div class="bag-container">
+                    <div class="error-number">404</div>
+                    <div class="bag"></div>
+                </div>
+                <div class="input-group mt-3">
+                    <span class="input-group-text">🔍</span>
+                    <input type="text" class="form-control" placeholder="What are you looking for?">
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
