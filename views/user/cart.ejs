@@ -1,0 +1,870 @@
+<%- include("../../views/partials/user/header") %>
+
+<link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    body {
+        background-color: #ffffff;
+        font-family: Arial, sans-serif;
+        overflow-x: hidden;
+    }
+    .cart-container {
+        width: 100%;
+        margin: 30px auto;
+    }
+    .cart-header {
+        background-color: #e9dba0;
+        color: #000;
+        font-weight: normal;
+        padding: 10px 15px;
+        text-align: left;
+    }
+    .product-row td {
+        padding: 15px 0;
+        border-bottom: 1px solid #e7e7e7;
+        vertical-align: middle;
+    }
+    .product-img {
+        max-height: 100px;
+        object-fit: contain;
+    }
+    .product-title {
+        font-weight: bold;
+        color: #000;
+        margin-bottom: 5px;
+        font-size: 16px;
+    }
+    .product-specs {
+        font-size: 14px;
+        color: #000;
+        margin-bottom: 5px;
+    }
+    .discount-tag {
+        color: #28a745;
+        font-size: 12px;
+    }
+    .original-price {
+        text-decoration: line-through;
+        color: #666;
+        font-size: 14px;
+    }
+    .sale-price {
+        color: #000;
+        font-size: 14px;
+    }
+    .quantity-control {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+    }
+    .quantity-btn {
+        width: 25px;
+        height: 25px;
+        border-radius: 50%;
+        background-color: #e9dba0;
+        border: 1px solid #e9dba0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+        transition: background-color 0.2s;
+    }
+    .quantity-btn:hover {
+        background-color: #e9dba0;
+    }
+    .quantity-input {
+        width: 40px;
+        text-align: center;
+        border: 1px solid #e9dba0;
+        background: #fff;
+        font-size: 14px;
+        padding: 2px;
+        border-radius: 4px;
+    }
+    .minus-btn {
+        order: -1;
+    }
+    .plus-btn {
+        order: 1;
+    }
+    @media screen and (max-width: 600px) {
+        .quantity-control {
+            gap: 3px;
+        }
+        .quantity-btn {
+            width: 22px;
+            height: 22px;
+            font-size: 14px;
+        }
+        .quantity-input {
+            width: 35px;
+            font-size: 12px;
+        }
+    }
+    .coupon-card {
+        border: 1px solid #28a745;
+        border-radius: 5px;
+        padding: 10px 15px;
+        margin: 20px 0;
+        max-width: 210px;
+        background-color: #f0fff0;
+    }
+    .coupon-code {
+        font-weight: bold;
+        color: #28a745;
+        font-size: 16px;
+    }
+    .coupon-value {
+        font-size: 14px;
+        margin-bottom: 3px;
+    }
+    .coupon-expiry {
+        font-size: 12px;
+        color: #666;
+    }
+    .cancel-btn {
+        color: #dc3545;
+        border: 1px solid #dc3545;
+        background-color: #fff;
+        font-size: 12px;
+        padding: 2px 8px;
+        border-radius: 15px;
+    }
+    .cart-totals {
+        margin-top: 20px;
+        padding-left: 300px;
+    }
+    .cart-title {
+        font-weight: bold;
+        margin-bottom: 15px;
+        font-size: 16px;
+    }
+    .cart-totals-row td {
+        padding: 5px 0;
+        font-size: 14px;
+    }
+    .final-total {
+        font-weight: bold;
+    }
+    .discount-value {
+        color: #28a745;
+    }
+    .free-delivery {
+        color: #f60;
+        font-weight: normal;
+    }
+    .view-coupons-btn {
+        background-color: #e9dba0;
+        color: #000;
+        border: none;
+        padding: 8px 16px;
+        font-size: 14px;
+        border-radius: 0;
+        float: right;
+        margin-bottom: 10px;
+    }
+    .coupon-input {
+        margin-top: 10px;
+        margin-bottom: 15px;
+        clear: both;
+    }
+    .coupon-input input {
+        border-radius: 0;
+        border: 1px solid #ccc;
+    }
+    .apply-btn {
+        background-color: #8a98de;
+        color: #fff;
+        border: none;
+        padding: 7px 16px;
+        border-radius: 0;
+        font-size: 14px;
+    }
+    .checkout-btn {
+        background-color: #e9dba0;
+        color: #000;
+        font-weight: bold;
+        width: 100%;
+        padding: 10px;
+        border: none;
+        font-size: 14px;
+        border-radius: 0;
+        text-transform: uppercase;
+    }
+    .remove-item {
+        cursor: pointer;
+        font-size: 14px;
+        color: #666;
+        margin-right: 10px;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .product-details {
+        width: 60%;
+    }
+    .price-column {
+        width: 15%;
+        text-align: center;
+    }
+    .quantity-column {
+        width: 10%;
+        text-align: center;
+    }
+    .total-column {
+        width: 15%;
+        text-align: center;
+    }
+    .layout-table {
+        width: 100%;
+        margin-top: 20px;
+    }
+    .layout-table td:first-child {
+        width: 40%;
+        vertical-align: top;
+        padding-right: 20px;
+    }
+    .layout-table td:last-child {
+        width: 60%;
+        vertical-align: top;
+    }
+    .totals-table {
+        width: 100%;
+    }
+    .totals-table td:first-child {
+        text-align: left;
+    }
+    .totals-table td:last-child {
+        text-align: right;
+    }
+    .product-image {
+        width: 100px;
+        height: 120px;
+        margin-right: 20px;
+        object-fit: contain;
+    }
+    .product-container {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        padding: 15px 0;
+    }
+    .product-info {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+    .remove-button {
+        background: #f0f0f0;
+        border: none;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        margin-right: 10px;
+        font-size: 18px;
+    }
+    .coupon-item {
+        border: 1px solid #e7e7e7;
+        border-radius: 5px;
+        background-color: #f9f9f9;
+    }
+    .coupon-info {
+        flex: 1;
+    }
+    .apply-coupon-btn {
+        background-color: #90EE90;
+        color: #000;
+        border: none;
+        padding: 6px 12px;
+        border-radius: 4px;
+        font-size: 14px;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .apply-coupon-btn:hover {
+        background-color: #78DA78;
+    }
+    .modal-body {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+</style>
+</head>
+<body>
+    <div class="container cart-container">
+        <h2 class="text-center mb-3">MY CART</h2>
+        
+        <!-- Cart Header and Products -->
+        <table>
+            <thead>
+                <tr>
+                    <th class="cart-header product-details">Product Details</th>
+                    <th class="cart-header price-column">Price</th>
+                    <th class="cart-header quantity-column">Quantity</th>
+                    <th class="cart-header total-column">Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                <% if (cartItems.length > 0) { %>
+    <% cartItems.forEach(item => { %>
+      <% if (item.productId) { %>
+        <tr class="cart-item" data-product-id="<%= item.productId._id %>">
+          <td class="product-column">
+            <div class="product-container">
+              <button class="remove-button" onclick="removeFromCart('<%= item.productId._id %>')">×</button>
+              <img src="<%= item.productId.productImage[0] %>" class="product-image" alt="<%= item.productId.productName %>">
+              <div class="product-info">
+                <h2 class="product-title"><%= item.productId.productName %></h2>
+                <p class="product-specs">
+                  <%= item.productId.category.name %><br>
+                  <%= item.productId.brand.name %>
+                </p>
+                <!-- Show offer discount if available -->
+        <% if (item.offer) { %>
+          <p class="discount-tag">
+            <%= item.offer.discount %>% OFF (<%= item.offer.offerName %>)
+          </p>
+          <p>
+            <span class="original-price">₹<%= item.price.toLocaleString('en-IN') %></span>
+            <span class="sale-price">₹<%= item.discountedPrice.toLocaleString('en-IN') %></span>
+          </p>
+        <% } else { %>
+          <!-- No offer, show regular price -->
+          <p>
+            <span class="sale-price">₹<%= item.price.toLocaleString('en-IN') %></span>
+          </p>
+        <% } %>
+      </div>
+    </div>
+  </td>
+  
+  <td class="price-column price-info">
+    ₹<%= item.price.toLocaleString('en-IN') %>
+  </td>
+          <td class="quantity-column">
+            <div class="quantity-control">
+              <button class="quantity-btn minus-btn" onclick="updateQuantity('<%= item.productId._id %>', -1)">−</button>
+              <input class="quantity-input" value="<%= item.quantity %>" min="1" readonly>
+              <button class="quantity-btn plus-btn" onclick="updateQuantity('<%= item.productId._id %>', 1)">+</button>
+            </div>
+          </td>
+          <td class="total-column total-info">
+           <% if (item.offer) { %>
+          <p class="discount-tag">
+            <%= item.offer.discount %>% OFF (<%= item.offer.offerName %>)
+          </p>
+          <p>
+            <span class="sale-price">₹<span class="item-total"><%= item.totalPrice.toLocaleString('en-IN') %></span></span>
+          </p>
+        <% } else { %>
+          <!-- No offer, show regular price -->
+          <p>
+            <span class="sale-price">₹<span class="item-total"><%= item.totalPrice.toLocaleString('en-IN') %></span></span>
+          </p>
+        <% } %>
+          </td>
+        </tr>
+      <% } %>
+    <% }) %>
+  <% } else { %>
+    <tr>
+      <td colspan="4" class="center">
+        <p>Your cart is empty</p>
+      </td>
+    </tr>
+  <% } %>
+            </tbody>
+        </table>
+        <!-- Coupon and Totals Section -->
+        <!-- <table class="layout-table">
+            <tr>
+                <td> -->
+                    <!-- Coupon Card -->
+                    <!-- <% if (appliedCoupon) { %>
+                        <div class="coupon-card">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="width: 70%;">
+                                        <div class="coupon-code"><%= appliedCoupon.name %></div>
+                                        <div class="coupon-value">Discount: ₹<%= appliedCoupon.discount.toLocaleString('en-IN') %></div>
+                                        <div class="coupon-expiry">Valid Until: <%= new Date(appliedCoupon.expiryDate).toLocaleDateString('en-IN') %></div>
+                                        <% if (appliedCoupon.minPurchase) { %>
+                                            <div class="coupon-expiry">Min Purchase: ₹<%= appliedCoupon.minPurchase.toLocaleString('en-IN') %></div>
+                                        <% } %>
+                                    </td>
+                                    <td style="width: 30%; text-align: right;">
+                                        <button class="cancel-btn" onclick="removeCoupon()">Cancel Coupon</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    <% } %>
+                </td>
+                <td>  -->
+                     <td>
+                    <!-- Warning message when offers are present -->
+                    <% if (hasOfferProducts) { %>
+                        <div class="offer-warning">
+                            <strong>⚠️ Note:</strong> Coupon discounts cannot be applied when you have products with active offers in your cart.
+                        </div>
+                    <% } %>
+                    
+                    <!-- Coupon Card -->
+                    <% if (appliedCoupon && !hasOfferProducts) { %>
+                        <div class="coupon-card">
+                            <table style="width: 100%;">
+                                <tr>
+                                    <td style="width: 70%;">
+                                        <div class="coupon-code"><%= appliedCoupon.name %></div>
+                                        <div class="coupon-value">Discount: ₹<%= appliedCoupon.discount.toLocaleString('en-IN') %></div>
+                                        <div class="coupon-expiry">Valid Until: <%= new Date(appliedCoupon.expiryDate).toLocaleDateString('en-IN') %></div>
+                                        <% if (appliedCoupon.minPurchase) { %>
+                                            <div class="coupon-expiry">Min Purchase: ₹<%= appliedCoupon.minPurchase.toLocaleString('en-IN') %></div>
+                                        <% } %>
+                                    </td>
+                                    <td style="width: 30%; text-align: right;">
+                                        <button class="cancel-btn" onclick="removeCoupon()">Cancel Coupon</button>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    <% } %>
+                </td>
+                    <!-- Cart Totals -->
+                     <div class="cart-totals">
+                        <h5 class="cart-title">CART TOTALS</h5>
+                        <% if (cartItems.length > 0) { %>
+                            <table class="totals-table">
+                                <tr class="cart-totals-row">
+                                    <td>Subtotal</td>
+                                    <td id="subtotal">₹<%= originalTotal.toLocaleString('en-IN') %></td>
+                                </tr>
+                                <% if (offerDiscount > 0) { %>
+                                <tr class="cart-totals-row">
+                                    <td>Offer Discount</td>
+                                    <td class="discount-value" id="offer-discount">-₹<%= offerDiscount.toLocaleString('en-IN') %></td>
+                                </tr>
+                                <% } %>
+                                <% if (couponDiscount > 0) { %>
+                                <tr class="cart-totals-row">
+                                    <td>Coupon Discount</td>
+                                    <td class="discount-value" id="coupon-discount">-₹<%= couponDiscount.toLocaleString('en-IN') %></td>
+                                </tr>
+                                <% } %>
+                                <tr class="cart-totals-row">
+                                    <td>Delivery</td>
+                                    <td class="free-delivery">FREE</td>
+                                </tr>
+                                <tr class="cart-totals-row final-total">
+                                    <td>TOTAL</td>
+                                    <td id="final-total">₹<%= (originalTotal - offerDiscount - couponDiscount).toLocaleString('en-IN') %></td>
+                                </tr>
+                            </table>
+                        <% } else { %>
+                            <p>No items in cart</p>
+                        <% } %>
+                        <button class="btn view-coupons-btn" 
+                                data-bs-toggle="modal" 
+                                data-bs-target="#couponsModal"
+                                <%= hasOfferProducts ? 'disabled' : '' %>>
+                            View Available Coupons
+                        </button>
+                        <div class="input-group coupon-input">
+                            <input id="couponCodeInput" 
+                                   type="text" 
+                                   class="form-control" 
+                                   placeholder="<%= hasOfferProducts ? 'Coupons disabled with offers' : 'Enter Coupon Code' %>"
+                                   <%= hasOfferProducts ? 'disabled' : '' %>>
+                            <button class="btn apply-btn" 
+                                    onclick="applyCoupon()"
+                                    <%= hasOfferProducts ? 'disabled' : '' %>>
+                                Apply Coupon
+                            </button>
+                        </div>
+                        <button class="checkout-btn" onclick="checkout()">PROCEED TO CHECKOUT</button>
+                    </div> 
+                </td>
+            </tr>
+        </table>
+    </div> 
+    <!-- Coupons Modal -->
+    <div class="modal fade" id="couponsModal" tabindex="-1" aria-labelledby="couponsModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="couponsModalLabel">Available Coupons</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <% if (coupons && coupons.length > 0) { %>
+                        <% coupons.forEach(coupon => { %>
+                            <div class="coupon-item d-flex justify-content-between align-items-center mb-3 p-2">
+                                <div class="coupon-info">
+                                    <div class="coupon-code"><%= coupon.name %></div>
+                                    <div class="coupon-value">Discount: ₹<%= coupon.offerPrice.toLocaleString('en-IN') %></div>
+                                    <div class="coupon-expiry">Valid Until: <%= new Date(coupon.expireOn).toLocaleDateString('en-IN') %></div>
+                                    <div class="coupon-expiry">Min Purchase: ₹<%= coupon.minimunPrice.toLocaleString('en-IN') %></div>
+                                </div>
+                                <button class="apply-coupon-btn" onclick="selectCoupon('<%= coupon.name %>')">Apply</button>
+                            </div>
+                        <% }) %>
+                    <% } else { %>
+                        <p>No coupons available at the moment.</p>
+                    <% } %>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
+    <script>
+
+        const hasOfferProducts = <%= hasOfferProducts ? 'true' : 'false' %>;
+        async function removeFromCart(productId) {
+            try {
+                const response = await fetch('/remove-from-cart', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ productId })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Removed',
+                        text: data.message,
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: data.message || 'Failed to remove from cart'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while removing from cart'
+                });
+            }
+        }
+
+        // async function updateQuantity(productId, change) {
+        //     try {
+        //         const response = await fetch('/update-cart-quantity', {
+        //             method: 'POST',
+        //             headers: { 'Content-Type': 'application/json' },
+        //             body: JSON.stringify({ productId, change })
+        //         });
+        //         const data = await response.json();
+        //         if (data.success) {
+        //             Swal.fire({
+        //                 icon: 'success',
+        //                 title: 'Updated',
+        //                 text: 'Quantity updated successfully',
+        //                 showConfirmButton: false,
+        //                 timer: 1500
+        //             }).then(() => {
+        //                 location.reload();
+        //             });
+        //         } else {
+        //             Swal.fire({
+        //                 icon: 'error',
+        //                 title: 'Oops...',
+        //                 text: data.message || 'Failed to update quantity'
+        //             });
+        //         }
+        //     } catch (error) {
+        //         console.error('Frontend error:', error);
+        //         Swal.fire({
+        //             icon: 'error',
+        //             title: 'Error',
+        //             text: 'An error occurred while updating quantity'
+        //         });
+        //     }
+        // }
+
+
+           function formatPrice(price) {
+    // ensure numeric
+    const n = Number(price) || 0;
+    return n.toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
+async function updateQuantity(productId, change) {
+    try {
+        const row = document.querySelector(`tr[data-product-id="${productId}"]`);
+        if (!row) {
+            console.warn('updateQuantity: row not found for productId', productId);
+            return location.reload(); // keep UI and server in sync
+        }
+
+        const quantityInput = row.querySelector('.quantity-input');
+        if (!quantityInput) {
+            console.warn('updateQuantity: quantity input not found for productId', productId);
+            return location.reload();
+        }
+
+        const currentQuantity = parseInt(quantityInput.value || '0', 10);
+        const newQuantity = currentQuantity + change;
+
+        if (newQuantity < 1) {
+            Swal.fire({ icon: 'warning', title: 'Minimum Quantity', text: 'Quantity cannot be less than 1', timer: 1500, showConfirmButton: false });
+            return;
+        }
+
+        // disable buttons during update
+        const buttons = row.querySelectorAll('.quantity-btn');
+        buttons.forEach(btn => btn.disabled = true);
+        row.classList.add('updating');
+
+        const response = await fetch('/update-cart-quantity', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ productId, change })
+        });
+
+        // handle non-JSON responses (server error)
+        if (!response.ok) {
+            let errMsg = 'Failed to update quantity';
+            try {
+                const errData = await response.json();
+                if (errData && errData.message) errMsg = errData.message;
+            } catch (e) {
+                console.error('updateQuantity: non-JSON error', e);
+            }
+            throw new Error(errMsg);
+        }
+
+        const data = await response.json();
+
+        if (!data || !data.success) {
+            throw new Error((data && data.message) ? data.message : 'Unknown error from /update-cart-quantity');
+        }
+
+        if (data.hasOfferProducts !== undefined && data.hasOfferProducts !== hasOfferProducts) {
+                    // Reload page if offer status changed
+                    location.reload();
+                    return;
+                }
+
+        // success -> update UI
+        quantityInput.value = data.newQuantity;
+
+        const itemTotalEl = row.querySelector('.item-total');
+        if (itemTotalEl) {
+            itemTotalEl.textContent = formatPrice(data.itemTotal);
+        } else {
+            console.warn('updateQuantity: .item-total not found for', productId);
+        }
+
+        // update cart totals (prefix with ₹). If fields missing, skip them.
+        const setIf = (id, val, prefix = '₹') => {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.textContent = prefix + formatPrice(val);
+        };
+
+        if (data.cartTotals) {
+            setIf('subtotal', data.cartTotals.originalTotal);
+            // show discounts as negative values
+            setIf('offer-discount', -Math.abs(data.cartTotals.offerDiscount));
+            setIf('coupon-discount', -Math.abs(data.cartTotals.couponDiscount));
+            setIf('final-total', data.cartTotals.finalTotal);
+        }
+
+        const Toast = Swal.mixin({ toast: true, position: 'top-end', showConfirmButton: false, timer: 1000, timerProgressBar: true });
+        Toast.fire({ icon: 'success', title: 'Quantity updated' });
+
+    } catch (err) {
+        console.error('updateQuantity error:', err);
+        Swal.fire({ icon: 'error', title: 'Error', text: err.message || 'An error occurred' });
+        // reload to keep UI consistent with server when uncertain
+        // comment this out if you'd rather not force reloads:
+        // location.reload();
+    } finally {
+        // re-enable buttons if available
+        const row = document.querySelector(`tr[data-product-id="${productId}"]`);
+        if (row) {
+            const buttons = row.querySelectorAll('.quantity-btn');
+            buttons.forEach(btn => btn.disabled = false);
+            row.classList.remove('updating');
+        }
+    }
+}
+
+
+        async function checkout() {
+            try {
+                const response = await fetch('/checkout', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                // const response = await fetch('/checkout', { method: 'GET' });
+                if (response.ok) {
+                    window.location.href = '/checkout';
+                } else {
+                    const data = await response.json();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'Failed to load checkout page'
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while loading the checkout page'
+                });
+            }
+        }
+
+        async function applyCoupon() {
+            if (hasOfferProducts) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'Cannot Apply Coupon',
+                    text: 'Please remove offer products from your cart to use coupons'
+                });
+                return;
+            }
+            
+            const couponCode = document.getElementById('couponCodeInput').value.trim();
+            if (!couponCode) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Please enter a coupon code'
+                });
+                return;
+            }
+            try {
+                const response = await fetch('/apply-coupon', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ couponCode })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Coupon applied successfully',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: data.message || 'Failed to apply coupon'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while applying the coupon'
+                });
+            }
+        }
+
+
+        async function removeCoupon() {
+            try {
+                const response = await fetch('/remove-coupon', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({})
+                });
+                const data = await response.json();
+                if (data.success) {
+                    Swal.fire({
+                        icon: 'success',
+                        title: 'Success',
+                        text: 'Coupon removed successfully',
+                        showConfirmButton: false,
+                        timer: 1500
+                    }).then(() => {
+                        location.reload();
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Oops...',
+                        text: data.message || 'Failed to remove coupon'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while removing the coupon'
+                });
+            }
+        }
+
+        function selectCoupon(couponCode) {
+            // document.getElementById('couponCodeInput').value = couponCode;
+            navigator.clipboard.writeText(couponCode)
+            Swal.fire({
+                icon: 'success',
+                title: 'Coupon Copied',
+                text: `Coupon code ${couponCode} has been copied!`,
+                showConfirmButton: false,
+                timer: 1500
+            }).then(() => {
+                const modal = bootstrap.Modal.getInstance(document.getElementById('couponsModal'));
+                modal.hide();
+                applyCoupon();
+            });
+        }
+
+        async function proceedToPayment() {
+            try {
+                const response = await fetch('/payment', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (response.ok) {
+                    window.location.href = '/payment';
+                } else {
+                    const data = await response.json();
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: data.message || 'Failed to load payment page'
+                    });
+                }
+            } catch (error) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'An error occurred while loading the payment page'
+                });
+            }
+        }
+    </script>
+</body>
+<%- include("../../views/partials/user/footer") %>

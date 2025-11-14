@@ -1,0 +1,206 @@
+
+
+<%- include("../../views/partials/user/header") %>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+        overflow-x: hidden;
+    }
+    .order-container {
+        max-width: 800px;
+        margin: 20px auto;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+        padding: 20px;
+    }
+    .order-header {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+    .order-header h2 {
+        font-weight: bold;
+        color: #28a745;
+    }
+    .order-details {
+        margin-bottom: 20px;
+    }
+    .order-details h5 {
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .order-items {
+        margin-bottom: 20px;
+    }
+    .order-items table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    .order-items th, .order-items td {
+        padding: 10px;
+        border-bottom: 1px solid #ddd;
+        text-align: left;
+    }
+    .order-items th {
+        background-color: #e6d992;
+    }
+    .order-summary {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        padding: 15px;
+    }
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+    .summary-row:last-child {
+        border-bottom: none;
+        font-weight: bold;
+    }
+    .btn-home {
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: 600;
+        display: inline-block;
+        margin-top: 20px;
+    }
+    .btn-home:hover {
+        background-color: #0d62c9;
+    }
+    .btn-button {
+        background-color: #1a73e8;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: 600;
+        display: inline-block;
+        margin-top: 20px;
+        margin-left: 400px;
+        
+    }
+    .btn-button:hover {
+        background-color: #0d62c9;
+    }
+</style>
+
+<body>
+    <div class="order-container">
+        <div class="order-header">
+            <h2>Order Confirmed!</h2>
+            <p>Order ID: <%= order.orderId %></p>
+        </div>
+
+        <div class="order-details">
+    <h5>Shipping Address</h5>
+    <p>
+        <% if (order.address) { %>
+          <strong><%= order.address.name %></strong><br>
+          <%= order.address.addressType %><%= order.address ? ', ' + order.address.landmark : '' %><br>
+          <%= order.address.city %> - <%= order.address.pincode %><br>
+          <%= order.address.state %><br>
+          Phone: <%= order.address.phone %>
+        <% } else if (selectedAddress) { %>
+          <strong><%= selectedAddress.name %></strong><br>
+          <%= selectedAddress.street %><%= selectedAddress.landmark ? ', ' + selectedAddress.landmark : '' %><br>
+          <%= selectedAddress.city %> - <%= selectedAddress.pincode %><br>
+          <%= selectedAddress.state %><br>
+          Phone: <%= selectedAddress.phone %>
+        <% } else { %>
+          No address provided
+        <% } %>
+      </p>
+</div>
+
+        <div class="order-items">
+            <h5>Order Items</h5>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Product</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <% cartItems.forEach(item => { %>
+                        <tr>
+                            <td>
+                                <%= item.Product.productName %>
+                                <% if (item.offer || (item.couponDiscount && item.couponDiscount > 0)) { %>
+                                    <div class="product-promo">
+                                        <% if (item.offer) { %>
+                                            <%= item.offer.discount %>% OFF (<%= item.offer.offerName %>)
+                                        <% } %>
+                                        <% if (item.couponDiscount && item.couponDiscount > 0) { %>
+                                            <% if (item.offer) { %> + <% } %>
+                                            Coupon Discount Applied
+                                        <% } %>
+                                    </div>
+                                <% } %>
+                            </td>
+                            <td><%= item.quantity %></td>
+                            <td>
+                                <% if (item.offer || (item.couponDiscount && item.couponDiscount > 0)) { %>
+                                    <span class="original-price">₹<%= item.price.toLocaleString('en-IN') %></span>
+                                <% } %>
+                                <span class="discounted-price">₹<%= (item.discountedPrice || item.price).toLocaleString('en-IN') %></span>
+                            </td>
+                            <td>₹<%= (item.totalPrice || (item.price * item.quantity)).toLocaleString('en-IN') %></td>
+                        </tr>
+                    <% }) %>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="order-summary">
+            <h5>Order Summary</h5>
+            <div class="summary-row">
+                <div>Subtotal</div>
+                <div>₹<%= order.totalPrice.toLocaleString('en-IN') %></div>
+            </div>
+            <% if (order.offerDiscount && order.offerDiscount > 0) { %>
+                <div class="summary-row">
+                    <div>Offer Discount</div>
+                    <div class="discount">-₹<%= order.offerDiscount.toLocaleString('en-IN') %></div>
+                </div>
+            <% } %>
+            <% if (order.couponDiscount && order.couponDiscount > 0) { %>
+                <div class="summary-row">
+                    <div>Coupon Discount</div>
+                    <div class="discount">-₹<%= order.couponDiscount.toLocaleString('en-IN') %></div>
+                </div>
+            <% } %>
+            <div class="summary-row">
+                <div>Shipping</div>
+                <div>FREE</div>
+            </div>
+            <div class="summary-row">
+                <div>Total Payable</div>
+                <div>₹<%= order.finalAmount.toLocaleString('en-IN') %></div>
+            </div>
+            <div class="summary-row">
+                <div>Payment Method</div>
+                <div><%= order.paymentMethod %></div>
+            </div>
+            <div class="summary-row">
+                <div>Status</div>
+                <div><%= order.status %></div>
+            </div>
+        </div>
+
+        <a href="/" class="btn-home">Continue Shopping</a>
+        <a href="/orderdetails?id=<%= order.orderId%>" class="btn-button ">Order Details</a>
+    </div>
+</body>
+
+<%- include("../../views/partials/user/footer") %>

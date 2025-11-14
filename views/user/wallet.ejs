@@ -1,0 +1,412 @@
+<%- include("../../views/partials/user/header") %>
+    <style>
+        
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: white;
+        }
+        
+        .wallet {
+            flex: 1;
+            padding: 60px;
+            
+        }
+        .profile-container {
+            display: flex;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: white;
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 300;
+            margin-bottom: 10px;
+            color: #333; /* Adjusted for visibility */
+        }
+        
+        .wallet-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px;
+            color: white;
+            position: relative;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+        }
+        
+        .card-holder {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+        
+        .card-number {
+            font-size: 1.1em;
+            letter-spacing: 3px;
+            margin-bottom: 25px;
+            font-family: 'Courier New', monospace;
+        }
+        
+        .balance {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        .validity {
+            position: absolute;
+            right: 30px;
+            bottom: 30px;
+            font-size: 0.9em;
+            opacity: 0.9;
+        }
+        
+        .transactions-section {
+            padding: 40px;
+        }
+        
+        .section-title {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 25px;
+            border-bottom: 2px solid #f0f0f0;
+            padding-bottom: 10px;
+        }
+        
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 30px;
+        }
+        
+        .transaction-table th {
+            background: #f8f9fa;
+            padding: 15px 10px;
+            text-align: left;
+            font-weight: 600;
+            color: #666;
+            border-bottom: 2px solid #e9ecef;
+        }
+        
+        .transaction-table td {
+            padding: 15px 10px;
+            border-bottom: 1px solid #f0f0f0;
+            vertical-align: middle;
+        }
+        
+        .transaction-table tr:hover {
+            background: #f8f9fa;
+        }
+        
+        .amount {
+            font-weight: 600;
+            font-size: 1.1em;
+        }
+        
+        .credit {
+            color: #28a745;
+        }
+        
+        .debit {
+            color: #dc3545;
+        }
+        
+        .transaction-type {
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8em;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+        
+        .type-credit {
+            background: #d4edda;
+            color: #155724;
+        }
+        
+        .type-debit {
+            background: #f8d7da;
+            color: #721c24;
+        }
+        
+        .date {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .description {
+            color: #333;
+        }
+        
+        .actions {
+            padding: 0 40px 40px;
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 100%);
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+            z-index: 1000;
+        }
+        
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 400px;
+        }
+        
+        .form-group {
+            margin-bottom: 20px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-size: 1em;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        @media (max-width: 768px) {
+            .container-wallet {
+                margin: 10px;
+                border-radius: 15px;
+            }
+            
+            .wallet-card {
+                margin: 20px;
+                padding: 25px;
+            }
+            
+            .balance {
+                font-size: 2em;
+            }
+            
+            .transaction-table {
+                font-size: 0.9em;
+            }
+            
+            .transaction-table th,
+            .transaction-table td {
+                padding: 10px 5px;
+            }
+            
+            .actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <%- include("../../views/partials/user/profilesidebar") %>
+    <div class="wallet">
+        <div class="header">
+            <h1>Welcome to Your Wallet</h1>
+        </div>
+        
+        <div class="wallet-card">
+            <div class="card-holder" id="cardHolder"><%= walletData.userName %></div>
+            <div class="card-number" id="cardNumber"><%= walletData.cardNumber %></div>
+            <div class="balance" id="balance">₹ <%= walletData.balance.toFixed(2) %></div>
+            <div class="validity">Valid Thru: Lifetime</div>
+        </div>
+        
+        <div class="transactions-section">
+            <h2 class="section-title">Recent Transactions</h2>
+            <table class="transaction-table">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Amount</th>
+                        <th>Type</th>
+                        <th>Date</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody id="transactionList">
+                    <% if (walletData.transactions.length > 0) { %>
+                            <% walletData.transactions.forEach((transaction, index) => { %>
+                                <tr>
+                                    <td><%= transaction.id %></td>
+                                    <td class="amount <%= transaction.type === 'credit' ? 'credit' : 'debit' %>">
+                                        <%= transaction.type === 'credit' ? '+' : '-' %>₹ <%= transaction.amount.toFixed(2) %>
+                                    </td>
+                                    <td>
+                                        <span class="transaction-type <%= transaction.type === 'credit' ? 'type-credit' : 'type-debit' %>">
+                                            <%= transaction.type %>
+                                        </span>
+                                    </td>
+                                    <td class="date"><%= new Date(transaction.date).toLocaleString() %></td>
+                                    <td class="description"><%= transaction.description %></td>
+                                </tr>
+                            <% }) %>
+                        <% } else { %>
+                            <tr>
+                                <td colspan="5" style="text-align: center; padding: 20px;">
+                                    No transactions found
+                                </td>
+                            </tr>
+                        <% } %>
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="actions">
+            
+            <button class="btn btn-primary" onclick="refreshWallet()">Refresh</button>
+        </div>
+    </div>
+    
+    <!-- Add Money Modal -->
+    <div id="addModal" class="modal">
+        <div class="modal-content">
+            <h3>Add Money to Wallet</h3>
+            <form onsubmit="addMoney(event)">
+                <div class="form-group">
+                    <label for="addAmount">Amount (₹)</label>
+                    <input type="number" id="addAmount" required min="1" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="addDescription">Description</label>
+                    <input type="text" id="addDescription" placeholder="e.g., Salary, Gift, etc.">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn btn-success" style="flex: 1;">Add Money</button>
+                    <button type="button" class="btn btn-danger" onclick="closeModal()" style="flex: 1;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    
+    <!-- Deduct Money Modal -->
+    <div id="deductModal" class="modal">
+        <div class="modal-content">
+            <h3>Pay/Send Money</h3>
+            <form onsubmit="deductMoney(event)">
+                <div class="form-group">
+                    <label for="deductAmount">Amount (₹)</label>
+                    <input type="number" id="deductAmount" required min="1" step="0.01">
+                </div>
+                <div class="form-group">
+                    <label for="deductDescription">Description</label>
+                    <input type="text" id="deductDescription" placeholder="e.g., Shopping, Bill payment, etc.">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button type="submit" class="btn btn-danger" style="flex: 1;">Pay Now</button>
+                    <button type="button" class="btn btn-success" onclick="closeModal()" style="flex: 1;">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // Use server-provided walletData
+        const walletData =  JSON.stringify(walletData) 
+
+        // Update wallet display
+        function updateWalletDisplay() {
+            document.getElementById('cardHolder').textContent = walletData.userName;
+            document.getElementById('cardNumber').textContent = walletData.cardNumber;
+            document.getElementById('balance').textContent = `₹ ${walletData.balance.toFixed(2)}`;
+            
+            // Update transactions (handled server-side in EJS)
+        }
+
+       
+
+        // Refresh wallet function
+        async function refreshWallet() {
+            try {
+                const response = await fetch('/wallet/refresh', {
+                    method: 'GET',
+                    headers: { 'Content-Type': 'application/json' }
+                });
+                if (response.ok) {
+                    window.location.reload();
+                } else {
+                    alert('Failed to refresh wallet');
+                }
+            } catch (error) {
+                console.error('Error refreshing wallet:', error);
+                alert('Server error. Please try again.');
+            }
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const addModal = document.getElementById('addModal');
+            const deductModal = document.getElementById('deductModal');
+            
+            if (event.target === addModal || event.target === deductModal) {
+                closeModal();
+            }
+        }
+
+        // Initialize display
+        updateWalletDisplay();
+    </script>
+</body>
+</html>

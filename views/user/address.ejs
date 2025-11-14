@@ -1,0 +1,742 @@
+<%- include("../../views/partials/user/header") %>
+<style>
+    body {
+        background-color: #f8f9fa;
+        color: #333;
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .profile-container {
+        display: flex;
+        min-height: 100vh;
+    }
+    .container {
+        max-width: 900px;
+        margin: 0 auto;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+    }
+    .main-content {
+        flex: 1;
+        padding: 60px;
+    }
+    .address-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+        border-bottom: 1px solid #eee;
+        padding-bottom: 15px;
+    }
+    .address-title {
+        font-size: 24px;
+        font-weight: bold;
+    }
+    .add-address-btn {
+        background-color: #fff;
+        color: #d4c276;
+        border: 1px solid #d4c276;
+        padding: 10px 15px;
+        border-radius: 5px;
+        cursor: pointer;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        transition: all 0.2s ease;
+    }
+    .add-address-btn:hover {
+        background-color: #d4c276;
+        color: white;
+    }
+    .address-label {
+        font-weight: bold;
+        font-size: 14px;
+        margin-bottom: 10px;
+        letter-spacing: 0.5px;
+    }
+    .address-card {
+        border: 1px solid #e0e0e0;
+        border-radius: 5px;
+        margin-bottom: 15px;
+        overflow: hidden;
+    }
+    .address-info {
+        padding: 20px;
+        position: relative;
+    }
+    .address-type {
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        background-color: #f3f4f6;
+        padding: 3px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        color: #616161;
+    }
+    .address-name {
+        font-weight: 600;
+        margin-bottom: 10px;
+        color: #424242;
+    }
+    .address-details {
+        color: #666;
+        line-height: 1.5;
+        margin-bottom: 15px;
+    }
+    .address-phone {
+        color: #666;
+        margin-top: 8px;
+    }
+    .address-actions {
+        display: flex;
+        border-top: 1px solid #e0e0e0;
+    }
+    .action-btn {
+        flex: 1;
+        text-align: center;
+        padding: 12px;
+        background: none;
+        border: none;
+        cursor: pointer;
+        font-weight: 500;
+        color: #d4c276;
+        transition: background-color 0.2s;
+    }
+    .action-btn:hover {
+        background-color: #f5f5f5;
+    }
+    .action-btn:first-child {
+        border-right: 1px solid #e0e0e0;
+    }
+    .modal-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+    .modal-title {
+        font-weight: 600;
+        color: #333;
+    }
+    .modal-footer {
+        background-color: #f8f9fa;
+        border-top: 1px solid #dee2e6;
+    }
+    .form-control:focus {
+        border-color: #d4c276;
+        box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+    }
+    .separator {
+        height: 1px;
+        background-color: #dee2e6;
+        margin: 20px 0;
+    }
+    .btn-cancel {
+        background-color: #fff;
+        color: #6c757d;
+        border: 1px solid #6c757d;
+    }
+    .btn-save {
+        background-color: #d4c276;
+        border-color: #d4c276;
+        color: white;
+    }
+    .required-field::after {
+        content: " *";
+        color: red;
+    }
+    .alert {
+        padding: 10px;
+        background-color: #f8d7da;
+        color: #721c24;
+        border-radius: 4px;
+        margin-bottom: 15px;
+    }
+    @media (max-width: 768px) {
+        .container {
+            padding: 15px;
+        }
+        .address-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 15px;
+        }
+        .add-address-btn {
+            width: 100%;
+            justify-content: center;
+        }
+        .main-content {
+            padding: 20px;
+        }
+    }
+    @media (max-width: 480px) {
+        body {
+            padding: 10px;
+        }
+        .container {
+            padding: 10px;
+        }
+        .address-info {
+            padding: 15px;
+        }
+        .address-type {
+            position: static;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+    }
+</style>
+</head>
+<body>
+    <%- include("../partials/user/profilesidebar") %>
+    <div class="main-content">
+        <div class="address-header">
+            <h1 class="address-title">Saved Addresses</h1>
+            <button class="add-address-btn" data-bs-toggle="modal" data-bs-target="#addressModal">+ ADD NEW ADDRESS</button>
+        </div>
+        
+        <div class="address-section">
+            <% if (message) { %>
+                <div class="alert"><%= message %></div>
+            <% } %>
+            <div class="address-label">SAVED ADDRESSES</div>
+            <% if (addresses && addresses.length > 0) { %>
+                <% addresses.forEach(address => { %>
+                    <div class="address-card">
+                        <div class="address-info">
+                            <span class="address-type"><%= address.addressType.toUpperCase() %></span>
+                            <h3 class="address-name"><%= address.name %></h3>
+                            <div class="address-details">
+                                <%= address.address %><br>
+                                <%= address.landmark %><br>
+                                <%= address.city %> - <%= address.pincode %><br>
+                                <%= address.state %>
+                            </div>
+                            <div class="address-phone">Mobile: <%= address.phone %></div>
+                            <% if (address.isDefault) { %>
+                                <div class="address-default" style="color: #d4c276; font-weight: bold;">Default Address</div>
+                            <% } %>
+                            <% if (address.addressType === 'office') { %>
+                                <div class="address-weekend">
+                                    Weekend Availability: 
+                                    <%= address.openSaturday ? 'Saturday Open' : 'Saturday Closed' %>,
+                                    <%= address.openSunday ? 'Sunday Open' : 'Sunday Closed' %>
+                                </div>
+                            <% } %>
+                        </div>
+                        <div class="address-actions">
+                            <button class="action-btn edit-address" data-address-id="<%= address._id %>">EDIT</button>
+                            <button class="action-btn remove-address" data-address-id="<%= address._id %>">REMOVE</button>
+                        </div>
+                    </div>
+                <% }) %>
+            <% } else { %>
+                <p>No addresses saved yet.</p>
+            <% } %>
+        </div>
+    </div>
+    
+    <!-- Address Modal -->
+    <div class="modal fade" id="addressModal" tabindex="-1" aria-labelledby="addressModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addressModalLabel">ADD NEW ADDRESS</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addressForm">
+                    <div class="mb-3">
+                        <label for="name" class="form-label required-field">Name</label>
+                        <input type="text" class="form-control" id="name" required>
+                        <div id="error-name" class="error-message"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="mobile" class="form-label required-field">Mobile</label>
+                        <input type="tel" class="form-control" id="mobile" required>
+                        <div id="error-mobile" class="error-message"></div>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="pincode" class="form-label required-field">Pincode</label>
+                            <input type="text" class="form-control" id="pincode" maxlength="6" required>
+                            <div id="error-pincode" class="error-message"></div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="state" class="form-label required-field">State</label>
+                            <input type="text" class="form-control" id="state" readonly required>
+                            <div id="error-state" class="error-message"></div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="address" class="form-label required-field">Address (House No, Building, Street, Area)</label>
+                        <input type="text" class="form-control" id="address" required>
+                        <div id="error-address" class="error-message"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="locality" class="form-label required-field">Locality/Town</label>
+                        <input type="text" class="form-control" id="locality" required>
+                        <div id="error-locality" class="error-message"></div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="city" class="form-label required-field">City/District</label>
+                        <input type="text" class="form-control" id="city" readonly required>
+                        <div id="error-city" class="error-message"></div>
+                    </div>
+                    <div class="separator"></div>
+                    <div class="mb-3">
+                        <label class="form-label required-field">Type of Address</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="addressType" id="home" value="home" checked>
+                            <label class="form-check-label" for="home">Home</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="addressType" id="office" value="office">
+                            <label class="form-check-label" for="office">Office</label>
+                        </div>
+                    </div>
+                    <div class="mb-3" id="weekendOptions">
+                        <label class="form-label">Is your office open on weekends?</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="saturday">
+                            <label class="form-check-label" for="saturday">Open on Saturday</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="sunday">
+                            <label class="form-check-label" for="sunday">Open on Sunday</label>
+                        </div>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="defaultAddress">
+                        <label class="form-check-label" for="defaultAddress">Make this as my default address</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-cancel" data-bs-dismiss="modal">CANCEL</button>
+                <button type="submit" form="addressForm" class="btn btn-save">SAVE</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+    </body>
+
+ <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const officeRadio = document.getElementById('office');
+    const homeRadio = document.getElementById('home');
+    const weekendOptions = document.getElementById('weekendOptions');
+    const pincodeInput = document.getElementById('pincode');
+    const cityInput = document.getElementById('city');
+    const stateInput = document.getElementById('state');
+    const nameInput = document.getElementById('name');
+    const mobileInput = document.getElementById('mobile');
+    const addressInput = document.getElementById('address');
+    const localityInput = document.getElementById('locality');
+    const errorName = document.getElementById('error-name');
+    const errorMobile = document.getElementById('error-mobile');
+    const errorPincode = document.getElementById('error-pincode');
+    const errorAddress = document.getElementById('error-address');
+    const errorLocality = document.getElementById('error-locality');
+    const errorCity = document.getElementById('error-city');
+    const errorState = document.getElementById('error-state');
+    const addressForm = document.getElementById('addressForm');
+    const modalTitle = document.getElementById('addressModalLabel');
+    const saveButton = document.querySelector('.btn-save');
+
+    // Toggle weekend options visibility
+    weekendOptions.style.display = homeRadio.checked ? 'none' : 'block';
+    officeRadio.addEventListener('change', function() {
+        weekendOptions.style.display = 'block';
+    });
+    homeRadio.addEventListener('change', function() {
+        weekendOptions.style.display = 'none';
+    });
+
+    // Validation Functions
+    function validateName() {
+        const nameVal = nameInput.value.trim();
+        if (nameVal === '') {
+            errorName.style.display = 'block';
+            errorName.textContent = 'Name is required';
+            return false;
+        } else {
+            errorName.style.display = 'none';
+            errorName.textContent = '';
+            return true;
+        }
+    }
+
+    function validateMobile() {
+        const mobileVal = mobileInput.value.trim();
+        if (mobileVal === '') {
+            errorMobile.style.display = 'block';
+            errorMobile.textContent = 'Mobile number is required';
+            return false;
+        } else if (mobileVal.length !== 10 || isNaN(mobileVal)) {
+            errorMobile.style.display = 'block';
+            errorMobile.textContent = 'Enter a valid 10-digit mobile number';
+            return false;
+        } else {
+            errorMobile.style.display = 'none';
+            errorMobile.textContent = '';
+            return true;
+        }
+    }
+
+    function validatePincode() {
+        const pincodeVal = pincodeInput.value.trim();
+        if (pincodeVal === '') {
+            errorPincode.style.display = 'block';
+            errorPincode.textContent = 'Pincode is required';
+            return false;
+        } else if (!/^\d{6}$/.test(pincodeVal)) {
+            errorPincode.style.display = 'block';
+            errorPincode.textContent = 'Pincode must be 6 digits';
+            cityInput.value = '';
+            stateInput.value = '';
+            return false;
+        } else {
+            errorPincode.style.display = 'none';
+            errorPincode.textContent = '';
+            return true;
+        }
+    }
+
+    function validateAddress() {
+        const addressVal = addressInput.value.trim();
+        if (addressVal === '') {
+            errorAddress.style.display = 'block';
+            errorAddress.textContent = 'Address is required';
+            return false;
+        } else {
+            errorAddress.style.display = 'none';
+            errorAddress.textContent = '';
+            return true;
+        }
+    }
+
+    function validateLocality() {
+        const localityVal = localityInput.value.trim();
+        if (localityVal === '') {
+            errorLocality.style.display = 'block';
+            errorLocality.textContent = 'Locality is required';
+            return false;
+        } else {
+            errorLocality.style.display = 'none';
+            errorLocality.textContent = '';
+            return true;
+        }
+    }
+
+    function validateCity() {
+        const cityVal = cityInput.value.trim();
+        if (cityVal === '') {
+            errorCity.style.display = 'block';
+            errorCity.textContent = 'City is required';
+            return false;
+        } else {
+            errorCity.style.display = 'none';
+            errorCity.textContent = '';
+            return true;
+        }
+    }
+
+    function validateState() {
+        const stateVal = stateInput.value.trim();
+        if (stateVal === '') {
+            errorState.style.display = 'block';
+            errorState.textContent = 'State is required';
+            return false;
+        } else {
+            errorState.style.display = 'none';
+            errorState.textContent = '';
+            return true;
+        }
+    }
+
+    // Pincode API integration
+    async function fetchLocation() {
+        cityInput.value = 'Loading…';
+        stateInput.value = 'Loading…';
+        try {
+            const response = await fetch(`https://api.postalpincode.in/pincode/${pincodeInput.value}`);
+            if (!response.ok) {
+                throw new Error(`API request failed with status ${response.status}`);
+            }
+            const data = await response.json();
+            if (data[0].Status === 'Success' && data[0].PostOffice && data[0].PostOffice.length > 0) {
+                const postOffice = data[0].PostOffice[0];
+                cityInput.value = postOffice.District || postOffice.Block || '';
+                stateInput.value = postOffice.State || '';
+                validateCity();
+                validateState();
+            } else {
+                cityInput.value = '';
+                stateInput.value = '';
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Pincode',
+                    text: 'No data found for this pincode'
+                });
+                validateCity();
+                validateState();
+            }
+        } catch (error) {
+            console.error('Error fetching pincode data:', error);
+            cityInput.value = '';
+            stateInput.value = '';
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: error.message.includes('Failed to fetch')
+                    ? 'Network error. Please check your connection.'
+                    : 'Error fetching pincode data. Please try again.'
+            });
+            validateCity();
+            validateState();
+        }
+    }
+
+    // Real-time Validation
+    nameInput.addEventListener('input', validateName);
+    mobileInput.addEventListener('input', validateMobile);
+    pincodeInput.addEventListener('input', () => {
+        if (validatePincode() && pincodeInput.value.trim().length === 6) {
+            fetchLocation();
+        } else {
+            cityInput.value = '';
+            stateInput.value = '';
+            validateCity();
+            validateState();
+        }
+    });
+    addressInput.addEventListener('input', validateAddress);
+    localityInput.addEventListener('input', validateLocality);
+
+    // Form submission handler
+    addressForm.addEventListener('submit', async function(event) {
+        event.preventDefault();
+
+        const isNameValid = validateName();
+        const isMobileValid = validateMobile();
+        const isPincodeValid = validatePincode();
+        const isAddressValid = validateAddress();
+        const isLocalityValid = validateLocality();
+        const isCityValid = validateCity();
+        const isStateValid = validateState();
+
+        if (!isNameValid || !isMobileValid || !isPincodeValid || !isAddressValid || !isLocalityValid || !isCityValid || !isStateValid) {
+            Swal.fire({
+                icon: 'error',
+                title: 'Invalid Input',
+                text: 'Please fill all required fields correctly'
+            });
+            return;
+        }
+
+        const addressId = document.getElementById('addressId')?.value;
+        const isEditMode = !!addressId;
+        const endpoint = isEditMode ? `/editAddress/${addressId}` : '/addAddress';
+        const method = isEditMode ? 'PUT' : 'POST';
+
+        const formData = {
+            name: nameInput.value.trim(),
+            mobile: mobileInput.value.trim(),
+            pincode: pincodeInput.value.trim(),
+            state: stateInput.value.trim(),
+            address: addressInput.value.trim(),
+            locality: localityInput.value.trim(),
+            city: cityInput.value.trim(),
+            addressType: document.querySelector('input[name="addressType"]:checked').value,
+            openSaturday: document.getElementById('saturday').checked,
+            openSunday: document.getElementById('sunday').checked,
+            isDefault: document.getElementById('defaultAddress').checked
+        };
+
+        try {
+            const response = await fetch(endpoint, {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(formData)
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Success',
+                    text: result.message,
+                    timer: 1500
+                }).then(() => {
+                    const modal = bootstrap.Modal.getInstance(document.getElementById('addressModal'));
+                    modal.hide();
+                    addressForm.reset();
+                    modalTitle.textContent = 'ADD NEW ADDRESS';
+                    saveButton.textContent = 'SAVE';
+                    const addressIdField = document.getElementById('addressId');
+                    if (addressIdField) addressIdField.remove();
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: result.message
+                });
+                if (result.message.includes('blocked')) {
+                    setTimeout(() => {
+                        window.location.href = '/login?message=Your account is blocked. Please contact support.';
+                    }, 1500);
+                }
+            }
+        } catch (error) {
+            console.error(`Error ${isEditMode ? 'updating' : 'adding'} address:`, error);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: `Failed to ${isEditMode ? 'update' : 'add'} address. Please try again.`
+            });
+        }
+    });
+
+    // Edit address functionality
+    document.querySelectorAll('.edit-address').forEach(button => {
+        button.addEventListener('click', async function() {
+            const addressId = this.dataset.addressId;
+            
+            try {
+                const response = await fetch(`/getAddress/${addressId}`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    const address = result.address;
+                    
+                    nameInput.value = address.name;
+                    mobileInput.value = address.phone;
+                    pincodeInput.value = address.pincode;
+                    stateInput.value = address.state;
+                    addressInput.value = address.address;
+                    localityInput.value = address.landmark;
+                    cityInput.value = address.city;
+                    
+                    // Validate fields on load
+                    validateName();
+                    validateMobile();
+                    validatePincode();
+                    validateAddress();
+                    validateLocality();
+                    validateCity();
+                    validateState();
+                    
+                    if (address.addressType === 'home') {
+                        document.getElementById('home').checked = true;
+                        weekendOptions.style.display = 'none';
+                    } else {
+                        document.getElementById('office').checked = true;
+                        weekendOptions.style.display = 'block';
+                        document.getElementById('saturday').checked = address.openSaturday;
+                        document.getElementById('sunday').checked = address.openSunday;
+                    }
+                    
+                    document.getElementById('defaultAddress').checked = address.isDefault;
+                    
+                    modalTitle.textContent = 'EDIT ADDRESS';
+                    saveButton.textContent = 'UPDATE';
+                    
+                    let addressIdField = document.getElementById('addressId');
+                    if (!addressIdField) {
+                        addressIdField = document.createElement('input');
+                        addressIdField.type = 'hidden';
+                        addressIdField.id = 'addressId';
+                        addressForm.appendChild(addressIdField);
+                    }
+                    addressIdField.value = addressId;
+                    
+                    const addressModal = new bootstrap.Modal(document.getElementById('addressModal'));
+                    addressModal.show();
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: result.message
+                    });
+                }
+            } catch (error) {
+                console.error('Error fetching address details:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: 'Failed to load address details. Please try again.'
+                });
+            }
+        });
+    });
+
+    // Remove address functionality
+    document.querySelectorAll('.remove-address').forEach(button => {
+        button.addEventListener('click', async function() {
+            const addressId = this.dataset.addressId;
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: 'Do you want to remove this address?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#d4c276',
+                cancelButtonColor: '#6c757d',
+                confirmButtonText: 'Yes, remove it!',
+                cancelButtonText: 'Cancel'
+            }).then(async (result) => {
+                if (result.isConfirmed) {
+                    try {
+                        const response = await fetch(`/removeAddress/${addressId}`, {
+                            method: 'PATCH',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        });
+
+                        const result = await response.json();
+
+                        if (result.success) {
+                            Swal.fire({
+                                icon: 'success',
+                                title: 'Success',
+                                text: result.message,
+                                timer: 2000
+                            }).then(() => {
+                                window.location.reload();
+                            });
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Error',
+                                text: result.message
+                            });
+                            if (result.message.includes('blocked')) {
+                                setTimeout(() => {
+                                    window.location.href = '/login?message=Your account is blocked. Please contact support.';
+                                }, 1500);
+                            }
+                        }
+                    } catch (error) {
+                        console.error('Error removing address:', error);
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: 'Failed to remove address. Please try again.'
+                        });
+                    }
+                }
+            });
+        });
+    });
+});
+</script>

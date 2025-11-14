@@ -1,0 +1,466 @@
+<%- include("../../views/partials/user/header") %>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+        overflow-x: hidden;
+    }
+    .payment-container {
+        max-width: 1200px;
+        margin: 20px auto;
+        background-color: white;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .header {
+        padding: 15px 20px;
+        border-bottom: 1px solid #e0e0e0;
+        background-color: white;
+    }
+    .header h5 {
+        margin-bottom: 0;
+        font-weight: 600;
+    }
+    .payment-options {
+        border-right: 1px solid #e0e0e0;
+    }
+    .payment-option {
+        padding: 20px;
+        border-bottom: 1px solid #e0e0e0;
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    .payment-option:hover {
+        background-color: #f5f5f5;
+    }
+    .payment-option.active {
+        background-color: #f0f7ff;
+        border-left: 3px solid #1a73e8;
+    }
+    .option-icon {
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border: 1px solid #e0e0e0;
+        border-radius: 4px;
+        margin-right: 15px;
+        background-color: #f8f9fa;
+    }
+    .option-text {
+        flex-grow: 1;
+    }
+    .option-title {
+        font-weight: 600;
+        margin-bottom: 4px;
+    }
+    .option-description {
+        font-size: 0.9rem;
+        color: #666;
+        margin: 0;
+    }
+    .payment-details {
+        padding: 20px;
+        background-color: #f8f9fa;
+    }
+    .back-button {
+        color: #333;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+    }
+    .cod-section, .wallet-section, .online-payment-section {
+        padding: 20px;
+        border-radius: 4px;
+        background-color: white;
+    }
+    .order-summary {
+        background-color: #fff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+    .summary-header {
+        background-color: #e6d992;
+        padding: 15px;
+        font-weight: bold;
+    }
+    .summary-content {
+        padding: 15px;
+    }
+    .summary-row {
+        display: flex;
+        justify-content: space-between;
+        padding: 10px 0;
+        border-bottom: 1px solid #eee;
+    }
+    .summary-row:last-child {
+        border-bottom: none;
+        font-weight: bold;
+    }
+    .proceed-btn {
+        background-color: #e6d992;
+        color: #333;
+        border: none;
+        padding: 15px;
+        width: 100%;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        border-radius: 0 0 4px 4px;
+    }
+    .proceed-btn:hover {
+        background-color: #d8cb84;
+    }
+    .proceed-btn:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+    }
+    @media (max-width: 991px) {
+        .payment-options {
+            border-right: none;
+        }
+        .payment-details {
+            border-top: 1px solid #e0e0e0;
+        }
+        .order-summary {
+            margin-top: 20px;
+        }
+    }
+</style>
+</head>
+<body>
+    <div class="container payment-container">
+        <div class="header">
+            <a href="/checkout" class="back-button">
+                <i class="fas fa-arrow-left me-2"></i>
+                <h5>Complete Payment</h5>
+            </a>
+        </div>
+        
+        <div class="row g-0">
+            <!-- Payment Options Column (Left) -->
+            <div class="col-md-3 payment-options">
+                <div class="payment-option" data-method="Online Payment">
+                    <div class="option-icon">
+                        <i class="fas fa-credit-card"></i>
+                    </div>
+                    <div class="option-text">
+                        <div class="option-title">Online Payment</div>
+                        <p class="option-description">Pay by Razorpay</p>
+                    </div>
+                </div>
+                <div class="payment-option" data-method="Cash on Delivery">
+                    <div class="option-icon">
+                        <i class="fas fa-money-bill-wave"></i>
+                    </div>
+                    <div class="option-text">
+                        <div class="option-title">Cash on Delivery</div>
+                        <p class="option-description">Pay when delivered</p>
+                    </div>
+                </div>
+                <div class="payment-option" data-method="Wallet">
+                    <div class="option-icon">
+                        <i class="fas fa-wallet"></i>
+                    </div>
+                    <div class="option-text">
+                        <div class="option-title">Wallet</div>
+                        <p class="option-description">Pay from wallet balance</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Payment Details Column (Middle) -->
+            <div class="col-md-6 payment-details">
+                <div id="paymentDetailsContent">
+                    <p>Please select a payment method to proceed.</p>
+                </div>
+                <div class="cod-section" style="display: none;">
+                    <h6>Cash on Delivery</h6>
+                    <p>You will pay ₹<%= finalTotal.toLocaleString('en-IN') %> in cash upon delivery.</p>
+                    <div class="alert alert-info mt-3">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Please keep the exact amount ready for a smooth delivery experience.
+                    </div>
+                </div>
+                <div class="wallet-section" style="display: none;">
+                    <h6>Wallet Payment</h6>
+                    <p>Amount ₹<%= finalTotal.toLocaleString('en-IN') %> will be deducted from your wallet balance.</p>
+                    <div class="alert alert-success mt-3">
+                        <i class="fas fa-wallet me-2"></i>
+                        Quick and secure payment from your wallet balance.
+                    </div>
+                    <div class="wallet-balance-info mt-3">
+                        <div class="d-flex justify-content-between align-items-center p-3 bg-light rounded">
+                            <span><strong>Available Balance:</strong></span>
+                            <span class="text-success"><strong>₹<%= user.walletBalance?.toLocaleString('en-IN') || '0.00' %></strong></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="online-payment-section" style="display: none;">
+                    <h6>Online Payment via Razorpay</h6>
+                    <p>You will be redirected to Razorpay's secure payment gateway.</p>
+                    <div class="alert alert-success mt-3">
+                        <i class="fas fa-shield-alt me-2"></i>
+                        Your payment is secured with industry-standard encryption.
+                    </div>
+                    <div class="payment-methods-info mt-3">
+                        <h6>Accepted Payment Methods:</h6>
+                        <ul class="list-unstyled">
+                            <li><i class="fas fa-credit-card me-2"></i>Credit/Debit Cards</li>
+                            <li><i class="fas fa-mobile-alt me-2"></i>UPI (Google Pay, PhonePe, Paytm)</li>
+                            <li><i class="fas fa-university me-2"></i>Net Banking</li>
+                            <li><i class="fas fa-wallet me-2"></i>Digital Wallets</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Order Summary Column (Right) -->
+            <div class="col-md-3">
+        <div class="order-summary">
+          <div class="summary-header">Order Summary</div>
+          <div class="summary-content">
+            <% if (cartItems.length > 0) { %>
+              <div class="summary-row">
+                <div>Subtotal</div>
+                <div>₹<%= cartItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toLocaleString('en-IN') %></div>
+              </div>
+              <div class="summary-row">
+                <div>Offer Discount</div>
+                <div class="discount">-₹<%= offerDiscount %></div>
+              </div>
+              <div class="summary-row">
+                <div>Coupon Discount</div>
+                <div class="discount">-₹<%= couponDiscount.toLocaleString('en-IN') %></div>
+              </div>
+              <div class="summary-row">
+                <div>Shipping</div>
+                <div class="shipping">FREE</div>
+              </div>
+              <div class="summary-row">
+                <div>Total Payable</div>
+                <div>₹<%= finalTotal.toLocaleString('en-IN') %></div>
+              </div>
+            <% } else { %>
+              <div class="summary-row">
+                <div>No items in cart</div>
+                <div>-</div>
+              </div>
+            <% } %>
+          </div>
+        </div>
+                <form id="paymentForm" action="/createOrder" method="POST">
+                    <input type="hidden" name="paymentMethod" id="paymentMethod" value="">
+                    <button type="submit" class="proceed-btn" disabled>Select Payment Method</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const paymentOptions = document.querySelectorAll('.payment-option');
+            const proceedButton = document.querySelector('.proceed-btn');
+            const paymentMethodInput = document.querySelector('#paymentMethod');
+            const paymentForm = document.querySelector('#paymentForm');
+            const paymentDetailsContent = document.querySelector('#paymentDetailsContent');
+            const codSection = document.querySelector('.cod-section');
+            const walletSection = document.querySelector('.wallet-section');
+            const onlinePaymentSection = document.querySelector('.online-payment-section');
+
+            proceedButton.disabled = true;
+
+            function hideAllSections() {
+                paymentDetailsContent.style.display = 'block';
+                codSection.style.display = 'none';
+                walletSection.style.display = 'none';
+                onlinePaymentSection.style.display = 'none';
+            }
+
+            paymentOptions.forEach(option => {
+                option.addEventListener('click', () => {
+                    paymentOptions.forEach(opt => opt.classList.remove('active'));
+                    option.classList.add('active');
+                    const method = option.getAttribute('data-method');
+                    paymentMethodInput.value = method;
+                    hideAllSections();
+                    paymentDetailsContent.style.display = 'none';
+                    
+                    if (method === 'Cash on Delivery') {
+                        codSection.style.display = 'block';
+                        proceedButton.textContent = 'Place Order (COD)';
+                    } else if (method === 'Wallet') {
+                        walletSection.style.display = 'block';
+                        proceedButton.textContent = 'Pay with Wallet';
+                    } else if (method === 'Online Payment') {
+                        onlinePaymentSection.style.display = 'block';
+                        proceedButton.textContent = 'Pay Now';
+                    }
+                    proceedButton.disabled = false;
+                });
+            });
+
+            paymentForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const selectedMethod = paymentMethodInput.value;
+
+                if (!selectedMethod) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Payment Method Required',
+                        text: 'Please select a payment method to proceed.',
+                        confirmButtonColor: '#1a73e8'
+                    });
+                    return;
+                }
+
+                proceedButton.disabled = true;
+                proceedButton.textContent = 'Processing...';
+
+                try {
+                    const response = await fetch('/createOrder', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ paymentMethod: selectedMethod })
+                    });
+
+                    const data = await response.json();
+
+                    if (!data.success) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Failed to process order. Please try again.',
+                            confirmButtonColor: '#1a73e8'
+                        });
+                        proceedButton.disabled = false;
+                        proceedButton.textContent = selectedMethod === 'Online Payment' ? 'Pay Now' : 'Place Order';
+                        return;
+                    }
+
+                    if (selectedMethod === 'Cash on Delivery') {
+                        window.location.href = data.redirect;
+                    } else if (selectedMethod === 'Online Payment') {
+                        if (typeof Razorpay === 'undefined') {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Payment Error',
+                                text: 'Razorpay SDK not loaded. Please try again.',
+                                confirmButtonColor: '#1a73e8'
+                            });
+                            proceedButton.disabled = false;
+                            proceedButton.textContent = 'Pay Now';
+                            return;
+                        }
+
+                        const options = {
+                            key: '<%= process.env.RAZORPAY_KEY_ID %>',
+                            amount: data.order.amount,
+                            currency: 'INR',
+                            name: 'Timeluxe',
+                            description: 'Order Payment',
+                            order_id: data.order.id,
+                            handler: async function(response) {
+                                try {
+                                    const verifyResponse = await fetch('/verifyPayment', {
+                                        method: 'POST',
+                                        headers: { 'Content-Type': 'application/json' },
+                                        body: JSON.stringify({
+                                            razorpay_payment_id: response.razorpay_payment_id,
+                                            razorpay_order_id: response.razorpay_order_id,
+                                            razorpay_signature: response.razorpay_signature,
+                                        })
+                                    });
+                                    const verifyData = await verifyResponse.json();
+                                    if (verifyData.success) {
+                                        Swal.fire({
+                                            icon: 'success',
+                                            title: 'Payment Successful!',
+                                            text: 'Your order has been placed successfully.',
+                                            confirmButtonColor: '#1a73e8'
+                                        }).then(() => {
+                                            window.location.href = verifyData.redirect;
+                                        });
+                                    } else {
+                                        Swal.fire({
+                                            icon: 'error',
+                                            title: 'Payment Verification Failed',
+                                            text: verifyData.message || 'Invalid payment. Please try again.',
+                                            confirmButtonColor: '#1a73e8'
+                                        });
+                                    }
+                                } catch (error) {
+                                    console.error('Error verifying payment:', error);
+                                    Swal.fire({
+                                        icon: 'error',
+                                        title: 'Verification Error',
+                                        text: 'Failed to verify payment. Please contact support.',
+                                        confirmButtonColor: '#1a73e8'
+                                    });
+                                }
+                            },
+                            prefill: {
+                                name: '<%= user.name %>',
+                                email: '<%= user.email %>',
+                                contact: '<%= user.mobile %>'
+                            },
+                            theme: {
+                                color: '#1a73e8'
+                            },
+                            modal: {
+                                ondismiss: function() {
+                                    proceedButton.disabled = false;
+                                    proceedButton.textContent = 'Pay Now';
+                                    Swal.fire({
+                                        icon: 'info',
+                                        title: 'Payment Cancelled',
+                                        text: 'You can try again when ready.',
+                                        confirmButtonColor: '#1a73e8'
+                                    }).then(() => {
+            window.location.href = '/orderfailure';
+        });
+                                }
+                            }
+                        };
+
+                        const rzp = new Razorpay(options);
+                        rzp.on('payment.failed', function(response) {
+                            console.error('Payment Failed:', response.error);
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Payment Failed',
+                                text: response.error.description || 'Payment failed. Please try again.',
+                                confirmButtonColor: '#1a73e8'
+                            }).then(() => {
+        window.location.href = '/orderfailure';
+    });
+                            proceedButton.disabled = false;
+                            proceedButton.textContent = 'Pay Now';
+                        });
+                        rzp.open();
+                    }
+                } catch (error) {
+                    console.error('Error processing payment:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Payment Error',
+                        text: 'An error occurred. Please try again.',
+                        confirmButtonColor: '#1a73e8'
+                    });
+                    proceedButton.disabled = false;
+                    proceedButton.textContent = selectedMethod === 'Online Payment' ? 'Pay Now' : 'Place Order';
+                }
+            });
+        });
+    </script>
+</body>
+<%- include("../../views/partials/user/footer") %>

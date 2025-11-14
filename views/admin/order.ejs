@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Management System</title>
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <style>
+      body {
+        background-color: #ffffff; /* From coupon */
+        color: #000000; /* From coupon */
+        font-family: Arial, sans-serif; /* Retain from original order code */
+        overflow-x: hidden;
+        margin: 0;
+        height: 100vh;
+      }
+      .order-wrapper {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+      }
+      .order-content {
+        flex: 1; /* take up all space above the footer */
+        overflow-y: auto; /* vertical scroll */
+        padding: 20px;
+      }
+      .order-container {
+        background-color: #ffffff; /* From coupon main-content */
+        border-radius: 8px;
+        padding: 60px;
+        margin-top: 20px;
+        margin-left: 230px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+      .search-container {
+        background-color: #edf4f5; /* From coupon table-container */
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+      }
+      .table {
+        background-color: #eef5f6; /* From coupon table */
+        color: #000000; /* From coupon table */
+      }
+      .table th {
+        background-color: #d1e7e9; /* From coupon table th */
+        color: #000000; /* From coupon table th */
+        text-transform: uppercase; /* From coupon table th */
+        font-size: 12px; /* From coupon table th */
+        border: none; /* From coupon table th */
+        text-align: center;
+        vertical-align: middle;
+      }
+      .table td {
+        background-color: #fbfdfd; /* From coupon table td */
+        color: #000000; /* From coupon table td */
+        border: none; /* From coupon table td */
+        font-size: 14px; /* From coupon table td */
+        text-align: center;
+        vertical-align: middle;
+      }
+      .table tr {
+        border-bottom: 1px solid #f5f8fa; /* From coupon table tr */
+      }
+      .btn-add-order {
+        background-color: #2ecc71; /* From coupon btn-add-coupon */
+        border: none; /* From coupon */
+        color: #ffffff; /* From coupon */
+        font-size: 14px; /* From coupon btn-add-coupon */
+        padding: 8px 20px; /* From coupon btn-add-coupon */
+        border-radius: 5px; /* From coupon btn-add-coupon */
+      }
+      .order-image {
+        width: 60px;
+        height: 60px;
+        object-fit: cover;
+        border-radius: 4px;
+      }
+      .table-responsive {
+        max-height: calc(100% - 60px); /* leave space for pagination */
+        overflow-x: auto;
+        overflow-y: hidden;
+      }
+      .status-badge {
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-size: 12px; /* From coupon invalid-feedback */
+        font-weight: bold;
+        text-transform: uppercase;
+      }
+      .status-pending {
+        background-color: #ffc107; /* Retain original */
+        color: #000; /* Retain original */
+      }
+      .status-processing {
+        background-color: #17a2b8; /* Retain original */
+        color: white; /* Retain original */
+      }
+      .status-shipped {
+        background-color: #fd7e14; /* Retain original */
+        color: white; /* Retain original */
+      }
+      .status-delivered {
+        background-color: #28a745; /* Retain original */
+        color: white; /* Retain original */
+      }
+      .status-cancelled {
+        background-color: #dc3545; /* From coupon btn-unlist */
+        color: white; /* From coupon */
+      }
+      .btn-action {
+        background-color: #3498db; /* From coupon btn-edit */
+        border: none; /* From coupon */
+        color: #ffffff; /* From coupon */
+        font-size: 12px; /* From coupon btn-edit */
+        padding: 5px 15px; /* From coupon btn-edit */
+        border-radius: 5px; /* From coupon btn-edit */
+        margin: 2px;
+      }
+      .btn-action:hover {
+        background-color: #2980b9; /* Darker shade of #3498db */
+        border: none; /* From coupon */
+        color: #ffffff; /* From coupon */
+      }
+      .action-buttons {
+        display: flex;
+        gap: 5px;
+        justify-content: center;
+        flex-wrap: wrap;
+      }
+      .pagination {
+        margin-top: 30px;
+      }
+      .pagination .page-item .page-link {
+        color: #3498db; /* From coupon btn-edit */
+        border-color: #ced4da; /* From coupon form-control */
+        padding: 8px 12px;
+        margin: 0 2px;
+        border-radius: 5px; /* From coupon btn-edit */
+        font-size: 14px; /* From coupon table td */
+      }
+      .pagination .page-item.active .page-link {
+        background-color: #3498db; /* From coupon btn-edit */
+        border-color: #3498db; /* From coupon btn-edit */
+        color: #ffffff; /* From coupon */
+      }
+      .pagination .page-link:hover {
+        background-color: #e9ecef; /* Slightly darker than #ffffff */
+        color: #3498db; /* From coupon btn-edit */
+        border-color: #ced4da; /* From coupon form-control */
+      }
+      .pagination .page-link:focus {
+        box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25); /* Based on #3498db */
+      }
+      .btn-a {
+        text-decoration: none;
+        color: inherit;
+      }
+      .form-control {
+        background-color: #ffffff; /* From coupon form-control */
+        color: #000000; /* From coupon form-control */
+        border: 1px solid #ced4da; /* From coupon form-control */
+        border-radius: 5px; /* From coupon search-bar */
+      }
+      .btn-light {
+        background-color: #2ecc71; /* From coupon btn-search */
+        border: none; /* From coupon */
+        color: #ffffff; /* From coupon */
+        font-size: 12px; /* From coupon btn-search */
+        padding: 5px 15px; /* From coupon btn-search */
+        border-radius: 5px; /* From coupon btn-search */
+      }
+      .btn-secondary {
+        background-color: #7f8c8d; /* From coupon btn-clear */
+        border: none; /* From coupon */
+        color: #ffffff; /* From coupon */
+        font-size: 12px; /* From coupon btn-clear */
+        padding: 5px 15px; /* From coupon btn-clear */
+        border-radius: 5px; /* From coupon btn-clear */
+      }
+      @media (max-width: 768px) {
+        .order-container {
+          margin-left: 0;
+          padding: 20px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container order-container">
+      <%-include("../partials/admin/header")%>
+      <div class="row mb-3">
+        <div class="col-md-6">
+          <h2>Orders Management</h2>
+        </div>
+      </div>
+
+      <form action="/admin/order" method="get" id="searchForm">
+        <div class="search-container">
+          <div class="row justify-content-center">
+            <div class="col-md-8">
+              <div class="input-group">
+                <input
+                  type="text"
+                  class="form-control"
+                  placeholder="Search orders by ID or customer name"
+                  id="searchInput"
+                  name="search"
+                />
+                <button class="btn btn-light" type="submit">
+                  <i class="fas fa-search"></i> Search
+                </button>
+                <button
+                  type="button"
+                  class="btn btn-secondary ms-2"
+                  id="clearBtn"
+                >
+                  Clear
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </form>
+
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead>
+            <tr>
+              <th style="width: 8%">Image</th>
+              <th style="width: 12%">Order ID</th>
+              <th style="width: 18%">Customer Name</th>
+              <th style="width: 12%">Order Date</th>
+              <th style="width: 12%">Total Amount</th>
+              <th style="width: 12%">Status</th>
+              <th style="width: 26%">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Sample order rows -->
+            <% orders.forEach(order => { %>
+            <tr>
+              <td>
+                <% if ( order.orderedItem && order.orderedItem[0] &&
+                order.orderedItem[0].Product &&
+                order.orderedItem[0].Product.productImage?.length ) { %>
+                <img
+                  src="<%= order.orderedItem[0].Product.productImage[0] %>"
+                  class="order-image"
+                  alt="<%= order.orderedItem[0].Product.productName %>"
+                />
+                <% } else { %>
+                <img
+                  src="/images/placeholder.jpg"
+                  class="order-image"
+                  alt="No image"
+                />
+                <% } %>
+              </td>
+              <td><strong><%= order.orderId %></strong></td>
+              <td><%= order.address.name %></td>
+              <td><%= order.createOn.toLocaleDateString() %></td>
+              <td><%= order.finalAmount %></td>
+              <td>
+                <% // compute a clean classname from the status const
+                statusClass = order.status.toLowerCase(); %>
+                <span class="status-badge status-<%= statusClass %>">
+                  <%= order.status %>
+                </span>
+              </td>
+              <td>
+                <div class="action-buttons">
+                  <button
+                    class="btn btn-action btn-sm"
+                    onclick="viewOrder('<%= order._id %>')"
+                  >
+                    <i class="fas fa-eye"></i> View
+                  </button>
+                </div>
+              </td>
+            </tr>
+            <% }) %>
+          </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation">
+          <ul class="pagination justify-content-center">
+            <% if (hasPreviousPage) { %>
+            <li class="page-item">
+              <button
+                type="button"
+                class="page-link btn btn-outline-secondary"
+                onclick="window.location.href='?page=<%= previousPage %>'"
+              >
+                «
+              </button>
+            </li>
+            <% } else { %>
+            <li class="page-item disabled">
+              <button class="page-link btn btn-outline-secondary" disabled>
+                «
+              </button>
+            </li>
+            <% } %>
+
+            <li class="page-item active">
+              <button class="page-link btn btn-secondary" disabled>
+                <%= currentPage %>
+              </button>
+            </li>
+
+            <% if (hasNextPage) { %>
+            <li class="page-item">
+              <button
+                type="button"
+                class="page-link btn btn-outline-secondary"
+                onclick="window.location.href='?page=<%= nextPage %>'"
+              >
+                »
+              </button>
+            </li>
+            <% } else { %>
+            <li class="page-item disabled">
+              <button class="page-link btn btn-outline-secondary" disabled>
+                »
+              </button>
+            </li>
+            <% } %>
+          </ul>
+        </nav>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    <script>
+      // Clear search functionality
+      document
+        .getElementById("clearBtn")
+        .addEventListener("click", function () {
+          document.getElementById("searchInput").value = "";
+          document.getElementById("searchForm").submit();
+        });
+
+      // Add Order Button
+      document
+        .getElementById("addOrderBtn")
+        .addEventListener("click", function () {
+          Swal.fire({
+            title: "Add New Order",
+            text: "This would open the add order modal",
+            icon: "info",
+            confirmButtonColor: "#C6A969",
+          });
+        });
+
+      // Action button functions
+      function viewOrder(orderId) {
+        window.location.href = `/admin/order-details?id=${orderId}`;
+      }
+      function editOrder(orderId) {
+        Swal.fire({
+          title: "Edit Order",
+          text: `Editing order: ${orderId}`,
+          icon: "info",
+          confirmButtonColor: "#C6A969",
+        });
+      }
+
+      function updateStatus(orderId) {
+        Swal.fire({
+          title: "Update Status",
+          text: `Update status for order: ${orderId}`,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#C6A969",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Update",
+        });
+      }
+
+      function trackOrder(orderId) {
+        Swal.fire({
+          title: "Track Order",
+          text: `Tracking order: ${orderId}`,
+          icon: "info",
+          confirmButtonColor: "#C6A969",
+        });
+      }
+
+      function invoiceOrder(orderId) {
+        Swal.fire({
+          title: "Generate Invoice",
+          text: `Generating invoice for order: ${orderId}`,
+          icon: "info",
+          confirmButtonColor: "#C6A969",
+        });
+      }
+
+      function refundOrder(orderId) {
+        Swal.fire({
+          title: "Process Refund",
+          text: `Are you sure you want to refund order: ${orderId}?`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#C6A969",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, refund it!",
+        });
+      }
+
+      function reorderOrder(orderId) {
+        Swal.fire({
+          title: "Reorder",
+          text: `Create new order based on: ${orderId}?`,
+          icon: "question",
+          showCancelButton: true,
+          confirmButtonColor: "#C6A969",
+          cancelButtonColor: "#d33",
+          confirmButtonText: "Yes, reorder!",
+        });
+      }
+
+      function deleteOrder(orderId) {
+        Swal.fire({
+          title: "Delete Order",
+          text: `Are you sure you want to delete order: ${orderId}?`,
+          icon: "warning",
+          showCancelButton: true,
+          confirmButtonColor: "#dc3545",
+          cancelButtonColor: "#6c757d",
+          confirmButtonText: "Yes, delete it!",
+        }).then((result) => {
+          if (result.isConfirmed) {
+            Swal.fire({
+              title: "Deleted!",
+              text: "Order has been deleted.",
+              icon: "success",
+              confirmButtonColor: "#C6A969",
+            });
+          }
+        });
+      }
+
+      // Client‑side live filter for your table
+      const searchInput = document.getElementById("searchInput");
+      searchInput.addEventListener("input", function () {
+        const term = this.value.trim().toLowerCase();
+
+        document.querySelectorAll("table tbody tr").forEach((row) => {
+          const orderId = row
+            .querySelector("td:nth-child(2)")
+            .innerText.toLowerCase();
+          const customer = row
+            .querySelector("td:nth-child(3)")
+            .innerText.toLowerCase();
+
+          // show row if either column contains term
+          if (orderId.includes(term) || customer.includes(term)) {
+            row.style.display = "";
+          } else {
+            row.style.display = "none";
+          }
+        });
+      });
+    </script>
+  </body>
+</html>

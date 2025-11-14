@@ -1,0 +1,503 @@
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Details</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            color: #000000;
+            background-color: #ffffff;
+        }
+
+        .container-orderdetais {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #ffffff;
+        }
+
+        .header-order {
+            color: #000000;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .header-order h1 {
+            font-size: 28px;
+            font-weight: 600;
+            margin: 0;
+            color: #000000;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            background-color: #edf4f5;
+            border: 1px solid #ced4da;
+            border-radius: 8px;
+            padding: 30px;
+        }
+
+        .section h2 {
+            color: #3498db;
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #3498db;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 8px 0;
+        }
+
+        .info-row:not(:last-child) {
+            border-bottom: 1px solid #f5f8fa;
+        }
+
+        .label {
+            font-weight: 600;
+            color: #000000;
+            min-width: 140px;
+            font-size: 14px;
+        }
+
+        .value {
+            color: #000000;
+            text-align: right;
+            flex: 1;
+            font-size: 14px;
+        }
+
+        .status-section {
+            text-align: center;
+        }
+
+        .status-dropdown {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #3498db;
+            border-radius: 5px;
+            background-color: #ffffff;
+            color: #000000;
+            font-size: 14px;
+            margin-bottom: 15px;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%233498db' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+            background-position: right 12px center;
+            background-repeat: no-repeat;
+            background-size: 16px;
+            cursor: pointer;
+        }
+
+        .update-btn {
+            background-color: #3498db;
+            border: none;
+            color: #ffffff;
+            padding: 12px 30px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+            width: 100%;
+        }
+
+        .update-btn:hover {
+            background-color: #2980b9;
+        }
+
+        .order-items {
+            grid-column: 1 / -1;
+            margin-top: 20px;
+        }
+
+        .items-table {
+            width: 100%;
+            border-collapse: collapse;
+            background-color: #eef5f6;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .items-table th {
+            background-color: #d1e7e9;
+            color: #000000;
+            padding: 15px;
+            text-align: left;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            border: none;
+        }
+
+        .items-table td {
+            padding: 10px;
+            border-bottom: 1px solid #f5f8fa;
+            background-color: #fbfdfd;
+            color: #000000;
+            font-size: 14px;
+        }
+
+        .items-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .items-table tr:nth-child(even) {
+            background-color: #ffffff;
+        }
+
+        .payment-summary {
+            grid-column: 1 / -1;
+            margin-top: 30px;
+            background-color: #edf4f5;
+            padding: 25px;
+            border-radius: 8px;
+            border: 1px solid #ced4da;
+        }
+
+        .payment-summary h3 {
+            color: #3498db;
+            font-size: 18px;
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            padding: 5px 0;
+            font-size: 14px;
+            color: #000000;
+        }
+
+        .payment-row.total {
+            border-top: 2px solid #3498db;
+            padding-top: 15px;
+            margin-top: 15px;
+            font-weight: 700;
+            font-size: 18px;
+            color: #3498db;
+        }
+
+        .price {
+            font-weight: 600;
+            color: #000000;
+            font-size: 14px;
+        }
+
+        .address {
+            line-height: 1.8;
+            font-size: 14px;
+        }
+
+        .update-btn.accept {
+            background-color: #2ecc71;
+            padding: 4px 8px;
+            width: auto;
+        }
+
+        .update-btn.accept:hover {
+            background-color: #27ae60;
+        }
+
+        .update-btn.reject {
+            background-color: #dc3545;
+            padding: 4px 8px;
+            width: auto;
+        }
+
+        .update-btn.reject:hover {
+            background-color: #c82333;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+                gap: 20px;
+                padding: 20px;
+            }
+            
+            .container-orderdetais {
+                padding: 10px;
+            }
+            
+            .header-order {
+                padding: 15px;
+            }
+            
+            .header-order h1 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-orderdetais">
+        <%- include("../partials/admin/header") %>
+        
+        <div class="header-order">
+            <h1>Order Details</h1>
+        </div>
+        
+        <div class="main-content">
+            <div class="section">
+                <h2>Order Information</h2>
+                <div class="info-row">
+                    <span class="label">Order ID:</span>
+                    <span class="value"><%= order.orderId %></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Customer Name:</span>
+                    <span class="value"><%= order.address.name %></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Order Date:</span>
+                    <span class="value"><%= order.createOn.toLocaleDateString() %></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Phone:</span>
+                    <span class="value"><%= order.address.phone %></span>
+                </div>
+                <div class="info-row">
+                    <span class="label">Shipping Address:</span>
+                    <div class="value address">
+                        <%= order.address.landmark %><br>
+                        <%= order.address.city %> - <%= order.address.pincode %>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="section status-section">
+                <h2>Order Status</h2>
+                <select class="status-dropdown" id="orderStatus">
+                    <option value="pending" <%= order.status === 'pending' ? 'selected' : '' %>>Pending</option>
+                    <option value="processing" <%= order.status === 'processing' ? 'selected' : '' %>>Processing</option>
+                    <option value="shipped" <%= order.status === 'shipped' ? 'selected' : '' %>>Shipped</option>
+                    <option value="delivered" <%= order.status === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                    <option value="cancelled" <%= order.status === 'cancelled' ? 'selected' : '' %>>Cancelled</option>
+                    <% if (order.status === 'delivered' || order.status === 'returnrequest' || order.status === 'returned') { %>
+                        <option value="returnrequest" <%= order.status === 'returnrequest' ? 'selected' : '' %>>Return Request</option>
+                        <option value="returned" <%= order.status === 'returned' ? 'selected' : '' %>>Returned</option>
+                    <% } %>
+                </select>
+                <button class="update-btn" onclick="updateStatus()">Update Status</button>
+            </div>
+            
+            <div class="order-items">
+                <h2 style="color: #3498db; font-size: 20px; font-weight: 600; margin-bottom: 20px; padding-bottom: 10px; border-bottom: 2px solid #3498db;">Order Items</h2>
+                <table class="items-table">
+                    <thead>
+                        <tr>
+                            <th>Product</th>
+                            <th style="text-align: center;">Quantity</th>
+                            <th style="text-align: right;">Price</th>
+                            <% if (cartItems.some(item => item.status === 'returnrequest')) { %>
+                                <th style="text-align: right;">Reason for Return</th>
+                                <th style="text-align: right;">Return Action</th>
+                            <% } else if (cartItems.some(item => item.status === 'returned')) { %>
+                                <th style="text-align: right;" colspan="2">Return Status</th>
+                            <% } else { %>
+                                <th style="text-align: right;" colspan="2"></th>
+                            <% } %>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% cartItems.forEach(item => { %>
+                            <tr>
+                                <td><%= item.Product.productName %></td>
+                                <td style="text-align: center;"><%= item.quantity %></td>
+                                <!-- <td style="text-align: right;">
+                                    <% if (item.discountedPrice && item.discountedPrice < item.price) { %>
+                                        <span style="text-decoration: line-through; color: #888;">₹<%= item.price %></span>
+                                        <span style="color: #e74c3c;">₹<%= item.discountedPrice %></span>
+                                    <% } else { %>
+                                        <%= order.finalAmount %>
+                                    <% } %>
+                                </td> -->
+                                <td style="text-align: right;">
+  <% if (item.discountedPrice != null && Number(item.discountedPrice) < Number(item.price)) { %>
+    <span style="text-decoration: line-through; color: #888;">₹<%= Number(item.price).toLocaleString('en-IN') %></span>
+    <span style="color: #e74c3c; margin-left:6px;">₹<%= Number(item.discountedPrice).toLocaleString('en-IN') %></span>
+  <% } else { %>
+    ₹<%= Number(item.price).toLocaleString('en-IN') %>
+  <% } %>
+</td>
+                                <!-- Debug: Log item status -->
+                                <% console.log(`Item ID: ${item._id}, Status: ${item.status}, Return Reason: ${item.returnReason || 'None'}`); %>
+                                <% if (item.status === 'returnrequest') { %>
+                                    <td style="text-align: right;"><%= item.returnReason || 'No reason provided' %></td>
+                                    <td style="text-align: end;">
+                                        <button class="update-btn accept" onclick="handleReturnAction('<%= order._id %>','<%= item._id %>','accept')">Accept</button>
+                                        <button class="update-btn reject" onclick="handleReturnAction('<%= order._id %>','<%= item._id %>','reject')">Reject</button>
+                                        <% if (item.status === 'returnrequest' && item._id === null) { %>
+                                        <button class="update-btn accept" onclick="handleReturnAction('<%= order._id %>', null, 'accept')" >Accept Order Return</button>
+                                        <button class="update-btn reject" onclick="handleReturnAction('<%= order._id %>', null, 'reject')" >Reject Order Return</button>
+                                        <% } %>
+                                    </td>
+                                <% } else if (item.status === 'returned') { %>
+                                    <td colspan="2" style="text-align: center; color: green; font-weight: 600;">Returned</td>
+                                <% } else if (item.status === 'delivered' && item.returnReason) { %>
+                                    <td colspan="2" style="text-align: center; color: red; font-weight: 600;">Return Rejected</td>
+                                <% } else { %>
+                                    <td colspan="2"></td>
+                                <% } %>
+                            </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="payment-summary">
+                <h3>Payment Summary</h3>
+                <!-- <div class="payment-row">
+                    <span>Items Total</span>
+                    <span class="price">₹<%= order.payment.grandTotal %></span>
+                </div> -->
+                <div class="payment-row">
+                    <span>Items Total</span>
+                    <span>₹<%= order.totalPrice %></span>
+                </div>
+                <div class="payment-row">
+                    <span>Cancelled/Returned</span>
+                    <span class="price">₹<%= order.payment.cancelled %></span>
+                </div>
+                <div class="payment-row">
+                    <span>Shipping Fee</span>
+                    <span class="price"> ₹0</span>
+                </div>
+                <div class="payment-row total">
+                    <span>Payable Amount</span>
+                    <span>₹<%= (order.finalAmount - order.payment.cancelled).toLocaleString('en-IN') %></span>
+                </div>
+                
+                <!-- <div class="payment-row">
+                    <span>Wallet Balance</span>
+                    <span class="price">₹<%= walletBalance %></span>
+                </div> -->
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        async function updateStatus() {
+            const select = document.getElementById('orderStatus');
+            const selectedValue = select.value;
+            const orderId = '<%= order._id %>';
+
+            const confirmation = await Swal.fire({
+                title: "Update Status",
+                text: `Are you sure you want to update the status of this order to "${selectedValue}"?`,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: "#C6A969",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, update it"
+            });
+
+            if (confirmation.isConfirmed) {
+                try {
+                    const response = await fetch(`/admin/orders/${orderId}/status`, {
+                        method: 'PUT',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ status: selectedValue })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        Swal.fire({
+                            title: "Success",
+                            text: "Order status has been updated successfully.",
+                            icon: "success",
+                            confirmButtonColor: "#C6A969"
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Error",
+                            text: "Failed to update status: " + result.message,
+                            icon: "error",
+                            confirmButtonColor: "#d33"
+                        });
+                    }
+                } catch (err) {
+                    Swal.fire({
+                        title: "Error",
+                        text: "An error occurred while updating status.",
+                        icon: "error",
+                        confirmButtonColor: "#d33"
+                    });
+                    console.error(err);
+                }
+            }
+        }
+
+        async function handleReturnAction(orderId, itemId, action) {
+            const confirmation = await Swal.fire({
+                title: `${action.charAt(0).toUpperCase() + action.slice(1)} Return Request`,
+                text: `Are you sure you want to ${action} the return request for ${itemId ? 'this item' : 'the entire order'}?`,
+                icon: "question",
+                showCancelButton: true,
+                confirmButtonColor: action === 'accept' ? "#28a745" : "#dc3545",
+                cancelButtonColor: "#6c757d",
+                confirmButtonText: `Yes, ${action} it`
+            });
+
+            if (confirmation.isConfirmed) {
+                try {
+                    const response = await fetch(`/admin/orders/${orderId}/return-item`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ itemId, action })
+                    });
+
+                    const result = await response.json();
+
+                    if (response.ok) {
+                        Swal.fire({
+                            title: "Success",
+                            text: `Return request has been ${action}ed successfully.`,
+                            icon: "success",
+                            confirmButtonColor: "#C6A969"
+                        }).then(() => {
+                            location.reload();
+                        });
+                    } else {
+                        Swal.fire({
+                            title: "Error",
+                            text: "Failed to process return request: " + result.message,
+                            icon: "error",
+                            confirmButtonColor: "#d33"
+                        });
+                    }
+                } catch (err) {
+                    Swal.fire({
+                        title: "Error",
+                        text: "An error occurred while processing the return request.",
+                        icon: "error",
+                        confirmButtonColor: "#d33"
+                    });
+                    console.error(err);
+                }
+            }
+        }
+    </script>
+</body>
+</html>

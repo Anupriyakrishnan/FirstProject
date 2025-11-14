@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sales Report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #ffffff;
+            color: #000000;
+            font-family: Arial, sans-serif;
+        }
+        .main-content {
+            background-color: #ffffff;
+            padding: 20px;
+        }
+        .filter-section {
+            background-color: #edf4f5;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .summary {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        .summary-box {
+            background-color: #fbfdfd;
+            border: 1px solid #ced4da;
+            padding: 15px;
+            border-radius: 5px;
+            flex: 1;
+        }
+        .table-container {
+            background-color: #edf4f5;
+            padding: 20px;
+            border-radius: 8px;
+        }
+        .table {
+            background-color: #eef5f6;
+            color: #000000;
+        }
+        .table th {
+            background-color: #d1e7e9;
+            color: #000000;
+            text-transform: uppercase;
+            font-size: 12px;
+            border: none;
+            cursor: pointer;
+        }
+        .table th:hover {
+            background-color: #c0d8da;
+        }
+        .table td {
+            background-color: #fbfdfd;
+            color: #000000;
+            border: none;
+            font-size: 14px;
+        }
+        .table tr {
+            border-bottom: 1px solid #f5f8fa;
+        }
+        .btn {
+            font-size: 12px;
+            padding: 5px 15px;
+            border-radius: 5px;
+            border: none;
+        }
+        .btn-apply {
+            background-color: #2ecc71;
+            color: #ffffff;
+        }
+        .btn-clear {
+            background-color: #7f8c8d;
+            color: #ffffff;
+        }
+        .btn-pdf {
+            background-color: #dc3545;
+            color: #ffffff;
+        }
+        .btn-excel {
+            background-color: #28a745;
+            color: #ffffff;
+        }
+        .form-control,
+        .form-select {
+            background-color: #ffffff;
+            color: #000000;
+            border: 1px solid #ced4da;
+            border-radius: 5px;
+        }
+        .sort-icon::after {
+            content: '';
+            display: inline-block;
+            margin-left: 5px;
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+        }
+        .sort-asc::after {
+            border-bottom: 5px solid #000;
+        }
+        .sort-desc::after {
+            border-top: 5px solid #000;
+        }
+    </style>
+</head>
+<body>
+    <%- include("../partials/admin/header") %>
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-9 col-lg-10 main-content">
+                <h3 class="text-center mb-4 text-dark">Sales Report</h3>
+                <div class="filter-section">
+                    <form id="filterForm" action="/admin/sales-report" method="GET">
+                        <div class="d-flex align-items-center mb-3">
+                            <div class="me-3">
+                                <label for="range" class="form-label">Select Range:</label>
+                                <select name="range" id="range" class="form-select" onchange="updateDateFields()">
+                                    <option value="">Custom Range</option>
+                                    <option value="daily" <%= range === 'daily' ? 'selected' : '' %>>Daily</option>
+                                    <option value="weekly" <%= range === 'weekly' ? 'selected' : '' %>>Weekly</option>
+                                    <option value="monthly" <%= range === 'monthly' ? 'selected' : '' %>>Monthly</option>
+                                </select>
+                            </div>
+                            
+                            <div class="me-3">
+                                <label for="startDate" class="form-label">Start Date:</label>
+                                <input type="date" name="startDate" id="startDate" class="form-control" value="<%= startDate || '' %>">
+                            </div>
+                            <div class="me-3">
+                                <label for="endDate" class="form-label">End Date:</label>
+                                <input type="date" name="endDate" id="endDate" class="form-control" value="<%= endDate || '' %>">
+                            </div>
+                            <div class="d-flex align-items-end">
+                                <button type="submit" class="btn btn-apply me-2">Apply</button>
+                                <button type="button" class="btn btn-clear me-2" onclick="clearFilters()">Clear</button>
+                                <button type="button" class="btn btn-pdf me-2" onclick="downloadReport('pdf')">PDF</button>
+                                <button type="button" class="btn btn-excel" onclick="downloadReport('excel')">Excel</button>
+                            </div>
+                        </div>
+                        <input type="hidden" name="sortBy" id="sortBy" value="<%= sortBy || 'createOn' %>">
+                        <input type="hidden" name="sortOrder" id="sortOrder" value="<%= sortOrder || 'desc' %>">
+                    </form>
+                </div>
+
+                <h4>Sales Summary</h4>
+                <div class="summary">
+                    <div class="summary-box">
+                        <h5>Gross Sales</h5>
+                        <p>₹<%= summary.grossSales.toLocaleString('en-IN') %></p>
+                    </div>
+                    <div class="summary-box">
+                        <h5>Cancelled or Returned</h5>
+                        <p>₹<%= summary.cancelledOrReturned.toLocaleString('en-IN') %></p>
+                    </div>
+                    <div class="summary-box">
+                        <h5>Discounts</h5>
+                        <p>₹<%= summary.discounts.toLocaleString('en-IN') %></p>
+                    </div>
+                    <div class="summary-box">
+                        <h5>Net Sales</h5>
+                        <p>₹<%= summary.netSales.toLocaleString('en-IN') %></p>
+                    </div>
+                    <div class="summary-box">
+                        <h5>Total Orders</h5>
+                        <p><%= summary.totalOrders %></p>
+                    </div>
+                </div>
+
+                <div class="table-container">
+                    <table class="table" id="salesTable">
+                        <thead>
+                            <tr>
+                                <th onclick="sortTable('orderId')">Order ID <span class="sort-icon"></span></th>
+                                <th onclick="sortTable('totalPrice')">Total Price <span class="sort-icon"></span></th>
+                                <th onclick="sortTable('discount')">Discount <span class="sort-icon"></span></th>
+                                <th onclick="sortTable('finalAmount')">Final Amount <span class="sort-icon"></span></th>
+                                <th onclick="sortTable('createOn')">Date <span class="sort-icon"></span></th>
+                                <th onclick="sortTable('status')">Status <span class="sort-icon"></span></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% orders.forEach(order => { %>
+                                <tr>
+                                    <td><%= order.orderId %></td>
+                                    <td>₹<%= (order.totalPrice || 0).toLocaleString('en-IN') %></td>
+                                    <td>₹<%= (order.discount || 0).toLocaleString('en-IN') %></td>
+                                    <td>₹<%= (order.finalAmount || 0).toLocaleString('en-IN') %></td>
+                                    <td><%= order.createOn.toLocaleDateString('en-IN') %></td>
+                                    <td><%= order.status || '—' %></td>
+                                </tr>
+                            <% }) %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function updateDateFields() {
+            const range = document.getElementById('range').value;
+            const startDateInput = document.getElementById('startDate');
+            const endDateInput = document.getElementById('endDate');
+            const today = new Date();
+
+            let startDate, endDate;
+            if (range === 'daily') {
+                startDate = new Date(today);
+                endDate = new Date(today);
+            } else if (range === 'weekly') {
+                endDate = new Date(today);
+                startDate = new Date(today);
+                startDate.setDate(today.getDate() - 6);
+            } else if (range === 'monthly') {
+                endDate = new Date(today);
+                startDate = new Date(today);
+                startDate.setDate(1);
+            } else {
+                startDateInput.value = '';
+                endDateInput.value = '';
+                return;
+            }
+
+            startDateInput.value = startDate.toISOString().split('T')[0];
+            endDateInput.value = endDate.toISOString().split('T')[0];
+        }
+
+        function clearFilters() {
+            document.getElementById('range').value = '';
+            document.getElementById('startDate').value = '';
+            endDateInput.value = '';
+            document.getElementById('sortBy').value = 'createOn';
+            document.getElementById('sortOrder').value = 'desc';
+            document.getElementById('filterForm').submit();
+        }
+
+        function sortTable(column) {
+            const currentSortBy = document.getElementById('sortBy').value;
+            const currentSortOrder = document.getElementById('sortOrder').value;
+
+            let newSortOrder = 'asc';
+            if (currentSortBy === column && currentSortOrder === 'asc') {
+                newSortOrder = 'desc';
+            }
+
+            document.getElementById('sortBy').value = column;
+            document.getElementById('sortOrder').value = newSortOrder;
+            document.getElementById('filterForm').submit();
+        }
+
+        function downloadReport(format) {
+  const range     = document.getElementById('range').value;
+  const startDate = document.getElementById('startDate').value;
+  const endDate   = document.getElementById('endDate').value;
+  const sortBy    = document.getElementById('sortBy').value;
+  const sortOrder = document.getElementById('sortOrder').value;
+  const url = `/admin/download?format=${format}`
+            + `&range=${range}`
+            + `&startDate=${startDate}`
+            + `&endDate=${endDate}`
+            + `&sortBy=${sortBy}`
+            + `&sortOrder=${sortOrder}`;
+
+  // Always open in a new tab, causing the file to download from there
+  window.open(url, '_blank').focus();
+}
+
+
+        // Update sort icons on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            const sortBy = '<%= sortBy || "createOn" %>';
+            const sortOrder = '<%= sortOrder || "desc" %>';
+            const th = document.querySelector(`th[onclick="sortTable('${sortBy}')"] .sort-icon`);
+            if (th) {
+                th.classList.add(sortOrder === 'asc' ? 'sort-asc' : 'sort-desc');
+            }
+        });
+    </script>
+</body>
+</html>

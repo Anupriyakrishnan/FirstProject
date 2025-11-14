@@ -1,0 +1,51 @@
+<%- include("../../views/partials/user/header") %>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: Arial, sans-serif;
+    }
+    .failure-container {
+        max-width: 600px;
+        margin: 50px auto;
+        text-align: center;
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 0 15px rgba(0,0,0,0.1);
+    }
+    .failure-icon {
+        font-size: 60px;
+        color: #dc3545;
+        margin-bottom: 20px;
+    }
+    .failure-title {
+        font-size: 24px;
+        font-weight: bold;
+        margin-bottom: 10px;
+    }
+    .failure-message {
+        font-size: 16px;
+        color: #666;
+        margin-bottom: 30px;
+    }
+    .failure-buttons .btn {
+        margin: 0 10px;
+        padding: 10px 20px;
+        font-weight: 600;
+    }
+</style>
+</head>
+<body>
+    <div class="failure-container">
+        <i class="fas fa-times-circle failure-icon"></i>
+        <h2 class="failure-title">Payment Failed</h2>
+        <p class="failure-message">We’re sorry, your payment could not be processed. Please try again or check your order details.</p>
+        <div class="failure-buttons">
+            <a href="/payment" class="btn btn-danger">Retry Payment</a>
+            
+        </div>
+    </div>
+</body>
+<%- include("../../views/partials/user/footer") %>
