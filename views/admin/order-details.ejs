@@ -359,33 +359,51 @@
                 </table>
             </div>
             
-            <div class="payment-summary">
+           <div class="payment-summary">
                 <h3>Payment Summary</h3>
-                <!-- <div class="payment-row">
-                    <span>Items Total</span>
-                    <span class="price">₹<%= order.payment.grandTotal %></span>
-                </div> -->
+                
+                <!-- Original Total -->
                 <div class="payment-row">
-                    <span>Items Total</span>
-                    <span>₹<%= order.totalPrice %></span>
-                </div>
-                <div class="payment-row">
-                    <span>Cancelled/Returned</span>
-                    <span class="price">₹<%= order.payment.cancelled %></span>
-                </div>
-                <div class="payment-row">
-                    <span>Shipping Fee</span>
-                    <span class="price"> ₹0</span>
-                </div>
-                <div class="payment-row total">
-                    <span>Payable Amount</span>
-                    <span>₹<%= (order.finalAmount - order.payment.cancelled).toLocaleString('en-IN') %></span>
+                    <span>Items Total (Original)</span>
+                    <span class="price">₹<%= Number(order.totalPrice).toLocaleString('en-IN') %></span>
                 </div>
                 
-                <!-- <div class="payment-row">
-                    <span>Wallet Balance</span>
-                    <span class="price">₹<%= walletBalance %></span>
-                </div> -->
+                <!-- Offer Discount -->
+                <% if (order.offerDiscount > 0) { %>
+                <div class="payment-row discount">
+                    <span>Offer Discount</span>
+                    <span class="price">- ₹<%= Number(order.offerDiscount).toLocaleString('en-IN') %></span>
+                </div>
+                <% } %>
+                
+                <!-- Coupon Discount -->
+                <% if (order.couponDiscount > 0) { %>
+                <div class="payment-row discount">
+                    <span>Coupon Discount</span>
+                    <span class="price">- ₹<%= Number(order.couponDiscount).toLocaleString('en-IN') %></span>
+                </div>
+                <% } %>
+                
+                <!-- Order Final Amount -->
+                <div class="payment-row" style="border-top: 1px solid #ddd; padding-top: 10px; margin-top: 10px;">
+                    <span style="font-weight: 600;">Order Amount</span>
+                    <span class="price">₹<%= Number(order.finalAmount).toLocaleString('en-IN') %></span>
+                </div>
+                
+                <!-- Cancelled/Returned Amount -->
+                <% if (order.payment.cancelled > 0) { %>
+                <div class="payment-row" style="color: #dc3545;">
+                    <span>Cancelled/Returned (Refunded)</span>
+                    <span class="price">- ₹<%= Number(order.payment.cancelled).toLocaleString('en-IN') %></span>
+                </div>
+                <% } %>
+                
+                <!-- Payable Amount -->
+                <div class="payment-row total">
+                    <span>Payable Amount</span>
+                    <span>₹<%= typeof order.payment.payableAmount === 'number' ? Number(order.payment.payableAmount).toLocaleString('en-IN') : Number(order.finalAmount - (order.payment.cancelled || 0)).toLocaleString('en-IN') %></span>
+                </div>
+
             </div>
         </div>
     </div>

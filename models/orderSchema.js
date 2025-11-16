@@ -48,6 +48,14 @@ const orderSchema = new Schema({
         type:Number,
         required:true
     },
+    offerDiscount:{
+        type:Number,
+        
+    },
+    couponDiscount:{
+        type:Number,
+
+    },
     discount:{
         type:Number,
         default:0
