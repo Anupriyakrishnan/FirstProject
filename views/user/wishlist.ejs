@@ -12,7 +12,7 @@
     background-color: #ffffff;
   }
 
-  .wishlist-container{
+  .wishlist-container {
     width: 100%;
     margin: 50px auto;
   }
@@ -254,48 +254,65 @@
         </tr>
       </thead>
       <tbody>
-        <% if (wishlist.length > 0) { %>
-          <% wishlist.forEach(product => { %>
-            <tr class="wishlist-item">
-              <td class="product-column">
-                <div class="product-container">
-                  <button class="remove-button" onclick="removeFromWishlist('<%= product._id %>')">×</button>
-                  <img
-                    src="<%= product.productImage[0] %>"
-                    class="product-image"
-                    alt="<%= product.productName %>"
-                  >
-                  <div class="product-info">
-                    <h3 class="product-title"><%= product.productName %></h3>
-                    <p class="product-specs">
-                      <%= product.category.name %><br>
-                      <%= product.brand.name %>
-                    </p>
-                    <% if (product.offer) { %>
-                      <p class="product-offer"><%= product.offer.discount %>% OFF (<%= product.offer.offerName %>)</p>
-                    <% } %>
-                  </div>
-                </div>
-              </td>
-              <td class="price-column price-info center">
+        <% if (wishlist.length > 0) { %> <% wishlist.forEach(product => { %>
+        <tr class="wishlist-item">
+          <td class="product-column">
+            <div class="product-container">
+              <button
+                class="remove-button"
+                onclick="removeFromWishlist('<%= product._id %>')"
+              >
+                ×
+              </button>
+              <img
+                src="<%= product.productImage[0] %>"
+                class="product-image"
+                alt="<%= product.productName %>"
+              />
+              <div class="product-info">
+                <h3 class="product-title"><%= product.productName %></h3>
+                <p class="product-specs">
+                  <%= product.category.name %><br />
+                  <%= product.brand.name %>
+                </p>
                 <% if (product.offer) { %>
-                  <span class="original-price">₹<%= product.salePrice.toLocaleString('en-IN') %></span>
-                  <span class="discounted-price" >₹<%= product.discountedPrice.toLocaleString('en-IN') %></span>
-                <% } else { %>
-                  <span class="current-price">₹<%= product.salePrice.toLocaleString('en-IN') %></span>
+                <p class="product-offer">
+                  <%= product.offer.discount %>% OFF (<%=
+                  product.offer.offerName %>)
+                </p>
                 <% } %>
-              </td>
-              <td class="action-column center">
-                <button class="add-cart-button" onclick="addToCart('<%= product._id %>', this)">Add to Cart</button>
-              </td>
-            </tr>
-          <% }) %>
-        <% } else { %>
-          <tr>
-            <td colspan="3" class="center">
-              <p>No items found in wishlist</p>
-            </td>
-          </tr>
+              </div>
+            </div>
+          </td>
+          <td class="price-column price-info center">
+            <% if (product.offer) { %>
+            <span class="original-price"
+              >₹<%= product.salePrice.toLocaleString('en-IN') %></span
+            >
+            <span class="discounted-price"
+              >₹<%= product.discountedPrice.toLocaleString('en-IN') %></span
+            >
+            <% } else { %>
+            <span class="current-price"
+              >₹<%= product.salePrice.toLocaleString('en-IN') %></span
+            >
+            <% } %>
+          </td>
+          <td class="action-column center">
+            <button
+              class="add-cart-button"
+              onclick="addToCart('<%= product._id %>', this)"
+            >
+              Add to Cart
+            </button>
+          </td>
+        </tr>
+        <% }) %> <% } else { %>
+        <tr>
+          <td colspan="3" class="center">
+            <p>No items found in wishlist</p>
+          </td>
+        </tr>
         <% } %>
       </tbody>
     </table>
@@ -305,25 +322,29 @@
   <script>
     async function removeFromWishlist(productId) {
       try {
-        const response = await fetch('/remove-from-wishlist', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const response = await fetch("/remove-from-wishlist", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ productId }),
         });
         const data = await response.json();
         if (response.ok) {
           Swal.fire({
-            icon: 'success',
-            title: 'Removed',
+            icon: "success",
+            title: "Removed",
             text: data.message,
             showConfirmButton: true,
           }).then(() => {
-            const wishlistItem = document.querySelector(`.remove-button[onclick="removeFromWishlist('${productId}')"]`).closest('.wishlist-item');
-            wishlistItem.style.opacity = '0.5';
+            const wishlistItem = document
+              .querySelector(
+                `.remove-button[onclick="removeFromWishlist('${productId}')"]`
+              )
+              .closest(".wishlist-item");
+            wishlistItem.style.opacity = "0.5";
             setTimeout(() => {
               wishlistItem.remove();
-              if (!document.querySelector('.wishlist-item')) {
-                document.querySelector('.wishlist-table tbody').innerHTML = `
+              if (!document.querySelector(".wishlist-item")) {
+                document.querySelector(".wishlist-table tbody").innerHTML = `
                   <tr>
                     <td colspan="3" class="center">
                       <p>No items found in wishlist</p>
@@ -335,77 +356,73 @@
           });
         } else {
           Swal.fire({
-            icon: 'error',
-            title: 'Oops...',
-            text: data.message || 'Failed to remove from wishlist',
+            icon: "error",
+            title: "Oops...",
+            text: data.message || "Failed to remove from wishlist",
           });
         }
       } catch (error) {
-        console.error('Error:', error);
+        console.error("Error:", error);
         Swal.fire({
-          icon: 'error',
-          title: 'Error',
-          text: 'An error occurred while removing from wishlist',
+          icon: "error",
+          title: "Error",
+          text: "An error occurred while removing from wishlist",
         });
       }
     }
 
+    async function addToCart(productId, button) {
+      try {
+        // Show loading state
+        const originalText = button.textContent;
+        button.textContent = "Adding...";
+        button.disabled = true;
 
-async function addToCart(productId, button) {
-  try {
-    // Show loading state
-    const originalText = button.textContent;
-    button.textContent = 'Adding...';
-    button.disabled = true;
-    
-    const response = await fetch('/add-to-cart', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ productId, quantity: 1 }),
-      credentials: 'same-origin' // Include cookies for session
-    });
-    
-    const data = await response.json();
-   
-    
-    if (response.ok) {
-      Swal.fire({
-        icon: 'success',
-        title: 'Added to Cart',
-        text: data.message,
-        showConfirmButton: false,
-        timer: 1500,
-      }).then(() => {
-        button.textContent = 'Go to Cart';
-        button.style.backgroundColor = '#168b41';
+        const response = await fetch("/add-to-cart", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ productId, quantity: 1 }),
+          credentials: "same-origin", // Include cookies for session
+        });
+
+        const data = await response.json();
+
+        if (response.ok) {
+          Swal.fire({
+            icon: "success",
+            title: "Added to Cart",
+            text: data.message,
+            showConfirmButton: false,
+            timer: 1500,
+          }).then(() => {
+            button.textContent = "Go to Cart";
+            button.style.backgroundColor = "#168b41";
+            button.disabled = false;
+            button.onclick = () => {
+              window.location.href = "/cart";
+            };
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Oops...",
+            text: data.message || "Failed to add to cart",
+          });
+          button.textContent = originalText;
+          button.disabled = false;
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "An error occurred while adding to cart",
+        });
+        button.textContent = "Add to Cart";
         button.disabled = false;
-        button.onclick = () => {
-          window.location.href = '/cart';
-        };
-      });
-    } else {
-      Swal.fire({
-        icon: 'error',
-        title: 'Oops...',
-        text: data.message || 'Failed to add to cart',
-      });
-      button.textContent = originalText;
-      button.disabled = false;
+      }
     }
-  } catch (error) {
-    console.error('Error:', error);
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'An error occurred while adding to cart',
-    });
-    button.textContent = 'Add to Cart';
-    button.disabled = false;
-  }
-}
-
-
-    </script>
+  </script>
 </body>
 
 <%- include("../../views/partials/user/footer") %>

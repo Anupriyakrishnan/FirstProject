@@ -1,54 +1,61 @@
-
 <!DOCTYPE html>
 <html lang="en">
   <head>
     <title></title>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-<style>
-.sidebar {
-            width: 200px;
-            background-color: #fff;
-            border-right: 1px solid #e0e0e0;
-            margin-top: 75px;
-            height: 400px;
-        }
-        
-        .sidebar-title {
-            padding: 10px 20px;
-            font-size: 16px;
-            font-weight: bold;
-            color: #333;
-        }
-        
-        .sidebar-menu {
-            list-style: none;
-        }
-        
-        .sidebar-menu li {
-            padding: 12px 20px;
-            cursor: pointer;
-            transition: background-color 0.3s;
-        }
-        
-        .sidebar-menu li:hover {
-            background-color: #f0f0f0;
-        }
-        
-        .sidebar-menu li.active {
-            color: #6e8a9e;
-            border-left: 3px solid #6e8a9e;
-            background-color: #f0f0f0;
-        }
-</style>
-<!-- views/partials/sidebar.ejs -->
-<div class="profile-container">
-        <div class="sidebar">
-            <div class="sidebar-title">SETTINGS</div>
-            <ul class="sidebar-menu">
-                <li class="active"><a href="/profile" class="nav-link">Personal Info</a></li>
-                <li><a href="/address" class="nav-link">Addresses</a></li>
-                <li><a href="/orders" class="nav-link">Orders</a></li>
-                <li><a href="/wallet" class="nav-link">Wallet</a></li>
-            </ul>
-        </div>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+    <style>
+      .sidebar {
+        width: 200px;
+        background-color: #fff;
+        border-right: 1px solid #e0e0e0;
+        margin-top: 75px;
+        height: 400px;
+      }
+
+      .sidebar-title {
+        padding: 10px 20px;
+        font-size: 16px;
+        font-weight: bold;
+        color: #333;
+      }
+
+      .sidebar-menu {
+        list-style: none;
+      }
+
+      .sidebar-menu li {
+        padding: 12px 20px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      .sidebar-menu li:hover {
+        background-color: #f0f0f0;
+      }
+
+      .sidebar-menu li.active {
+        color: #6e8a9e;
+        border-left: 3px solid #6e8a9e;
+        background-color: #f0f0f0;
+      }
+    </style>
+    <!-- views/partials/sidebar.ejs -->
+    <div class="profile-container">
+      <div class="sidebar">
+        <div class="sidebar-title">SETTINGS</div>
+        <ul class="sidebar-menu">
+          <li class="active">
+            <a href="/profile" class="nav-link">Personal Info</a>
+          </li>
+          <li><a href="/address" class="nav-link">Addresses</a></li>
+          <li><a href="/orders" class="nav-link">Orders</a></li>
+          <li><a href="/wallet" class="nav-link">Wallet</a></li>
+        </ul>
+      </div>
+    </div>
+  </head>
+</html>

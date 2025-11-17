@@ -1,24 +1,24 @@
 <style>
   .price-dc {
-  text-decoration: line-through;
-  color: #888;
-  font-size: 0.9em;
-}
-.price-sale {
-  color: #e74c3c; /* Red color for discounted price */
-  font-weight: bold;
-  font-size: 1.1em;
-}
-.pricing .price span.ml-2 {
-  color: #2ecc71; /* Green color for discount percentage */
-  font-size: 0.9em;
-}
+    text-decoration: line-through;
+    color: #888;
+    font-size: 0.9em;
+  }
+  .price-sale {
+    color: #e74c3c; /* Red color for discounted price */
+    font-weight: bold;
+    font-size: 1.1em;
+  }
+  .pricing .price span.ml-2 {
+    color: #2ecc71; /* Green color for discount percentage */
+    font-size: 0.9em;
+  }
 </style>
 <%- include("../partials/user/header") %>
 
 <!-- <section>
    <img class="img-fluid" src="/images/luxury-watch-brands-for-men-1030x515 (1).jpg" alt="" style="inline-size: 100%;"> -->
-  <!-- <div class="text"> 
+<!-- <div class="text"> 
    <span class="subheading">#New Arrival</span>
    <div class="horizontal">
     <h1 class="mb-4 mt-3">Latest Technology</h1>
@@ -27,16 +27,16 @@
     </p>
    </div>
   </div> -->
- <!-- // <div class="container">
+<!-- // <div class="container">
                     //<div class="row">
                         //<div class="col-xl-5 col-lg-7 col-md-8"> -->
-                            <!-- <div class="hero__text">
+<!-- <div class="hero__text">
                                  <h6>Summer Collection</h6>
                                 <h2>Fall - Winter Collections 2030</h2>
                                 <p>A specialist label creating luxury essentials. Ethically crafted with an unwavering
                                 commitment to exceptional quality.</p>
                                 <a href="#" class="primary-btn">Shop now <span class="arrow_right"></span></a>  -->
-                                <!-- <div class="hero__social">
+<!-- <div class="hero__social">
                                     <a href="#"><i class="fa fa-facebook"></i></a>
                                     <a href="#"><i class="fa fa-twitter"></i></a>
                                     <a href="#"><i class="fa fa-pinterest"></i></a>
@@ -47,9 +47,13 @@
                     </div>
                 </div>
 </section> -->
-<section class="hero-banner" style="position: relative; overflow: hidden;">
-  <img class="img-fluid" src="/images/luxury-watch-brands-for-men-1030x515 (1).jpg" 
-       alt="Banner" style="width: 100%; height: auto;">
+<section class="hero-banner" style="position: relative; overflow: hidden">
+  <img
+    class="img-fluid"
+    src="/images/luxury-watch-brands-for-men-1030x515 (1).jpg"
+    alt="Banner"
+    style="width: 100%; height: auto"
+  />
 
   <!-- Overlay text and button -->
   <div class="hero-text">
@@ -62,48 +66,50 @@
 </section>
 
 <style>
-.hero-banner {
-  width: 100%;
-  height: auto;
-}
+  .hero-banner {
+    width: 100%;
+    height: auto;
+  }
 
-.hero-text {
-  position: absolute;
-  top: 30%;   /* vertically centered */
-  left: 60%;  /* horizontally centered */
-  transform: translate(-50%, -50%);
-  text-align: center;
-  color: rgb(7, 7, 7);
-  font-weight: bold;
-}
+  .hero-text {
+    position: absolute;
+    top: 30%; /* vertically centered */
+    left: 60%; /* horizontally centered */
+    transform: translate(-50%, -50%);
+    text-align: center;
+    color: rgb(7, 7, 7);
+    font-weight: bold;
+  }
 
-.hero-text h1 {
-  font-size: 4.5rem;
-  font-weight: bold;
-  text-shadow: 2px 2px 5px rgba(0,0,0,0.5);
-}
+  .hero-text h1 {
+    font-size: 4.5rem;
+    font-weight: bold;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.5);
+  }
 
-.hero-text .subheading {
-  display: block;
-  font-size: 1.2rem;
-  margin-bottom: 10px;
-}
+  .hero-text .subheading {
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+  }
 
-.hero-text .btn {
-  padding: 10px 25px;
-  border-radius: 25px;
-  font-size: 1rem;
-  font-weight: bold;
-}
+  .hero-text .btn {
+    padding: 10px 25px;
+    border-radius: 25px;
+    font-size: 1rem;
+    font-weight: bold;
+  }
 </style>
-
 
 <section class="ftco-section bg-light">
   <div class="container">
     <div class="row justify-content-center mb-3 pb-3">
       <div class="col-md-12 heading-section text-center ftco-animate">
         <h2 class="mb-4">New Watches Arrival</h2>
-        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
+        <p>
+          Far far away, behind the word mountains, far from the countries
+          Vokalia and Consonantia
+        </p>
       </div>
     </div>
   </div>
@@ -115,9 +121,11 @@
           <a href="/product-details?id=<%= products[i]._id %>" class="img-prod">
             <img
               class="img-fluid"
-			  src="<%= products[i].productImage[0] || '/placeholder.jpg' %>" height="25em" alt=""
-			  alt="<%= products[i].productName %>"
-            >
+              src="<%= products[i].productImage[0] || '/placeholder.jpg' %>"
+              height="25em"
+              alt=""
+              alt="<%= products[i].productName %>"
+            />
             <div class="overlay"></div>
           </a>
           <div class="text py-3 pb-4 px-3">
@@ -138,28 +146,34 @@
             <h3><%= products[i].productName %></h3>
             <div class="pricing">
               <% if (products[i].offer) { %>
-                <p class="price">
-                  <span class="mr-2 price-dc">₹<%= products[i].salePrice %></span>
-                  <span class="price-sale">₹<%= products[i].discountedPrice %></span>
-                  <span class="ml-2"><%= products[i].offer.discount %>% off</span>
-                </p>
+              <p class="price">
+                <span class="mr-2 price-dc">₹<%= products[i].salePrice %></span>
+                <span class="price-sale"
+                  >₹<%= products[i].discountedPrice %></span
+                >
+                <span class="ml-2"><%= products[i].offer.discount %>% off</span>
+              </p>
               <% } else { %>
-                <p class="price">
-                  <span class="mr-2">₹<%= products[i].salePrice %></span>
-                </p>
+              <p class="price">
+                <span class="mr-2">₹<%= products[i].salePrice %></span>
+              </p>
               <% } %>
             </div>
             <p class="bottom-area d-flex px-3">
-              <button type="button" 
-                      onclick="addToWishlist('<%= products[i]._id %>')" 
-                      class="add-to-cart text-center py-2 mr-1"
-                      id="wishlist-btn-<%= products[i]._id %>">
+              <button
+                type="button"
+                onclick="addToWishlist('<%= products[i]._id %>')"
+                class="add-to-cart text-center py-2 mr-1"
+                id="wishlist-btn-<%= products[i]._id %>"
+              >
                 <span>Wishlist <i class="ion-ios-add ml-1"></i></span>
               </button>
-              <button type="button" 
-                      onclick="addToCart('<%= products[i]._id %>')" 
-                      class="buy-now text-center py-2"
-                      id="cart-btn-<%= products[i]._id %>">
+              <button
+                type="button"
+                onclick="addToCart('<%= products[i]._id %>')"
+                class="buy-now text-center py-2"
+                id="cart-btn-<%= products[i]._id %>"
+              >
                 Add to cart<span><i class="ion-ios-cart ml-1"></i></span>
               </button>
             </p>
@@ -173,15 +187,13 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 
- <script>
-
-  
-async function addToWishlist(productId) {
+<script>
+  async function addToWishlist(productId) {
     try {
-      const response = await fetch('/addToWishlist', {
-        method: 'POST',
+      const response = await fetch("/addToWishlist", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify({ productId }),
       });
@@ -190,40 +202,40 @@ async function addToWishlist(productId) {
 
       if (response.ok && data.status) {
         Swal.fire({
-          title: 'Added to Wishlist',
-          text: 'The product has been added to your wishlist',
-          icon: 'success',
+          title: "Added to Wishlist",
+          text: "The product has been added to your wishlist",
+          icon: "success",
           // timer: 2000,
           showConfirmButton: true,
         }).then(() => {
-            window.location.href = '/wishlist';
-      })
+          window.location.href = "/wishlist";
+        });
       } else {
         Swal.fire({
-          title: 'Already in Wishlist',
-          text: data.message || 'Product already in wishlist',
-          icon: 'info',
+          title: "Already in Wishlist",
+          text: data.message || "Product already in wishlist",
+          icon: "info",
           timer: 2000,
           showConfirmButton: false,
         });
       }
     } catch (error) {
-      console.error('Error adding to wishlist:', error);
-      if (error.message.includes('401')) {
+      console.error("Error adding to wishlist:", error);
+      if (error.message.includes("401")) {
         Swal.fire({
-          title: 'Login Required',
-          text: 'Please log in to add items to your wishlist',
-          icon: 'warning',
+          title: "Login Required",
+          text: "Please log in to add items to your wishlist",
+          icon: "warning",
           timer: 2000,
           showConfirmButton: false,
         }).then(() => {
-          window.location.href = '/login';
+          window.location.href = "/login";
         });
       } else {
         Swal.fire({
-          title: 'Error',
-          text: 'There was an error adding the product to your wishlist',
-          icon: 'error',
+          title: "Error",
+          text: "There was an error adding the product to your wishlist",
+          icon: "error",
           timer: 2000,
           showConfirmButton: false,
         });
@@ -231,62 +243,60 @@ async function addToWishlist(productId) {
     }
   }
 
- 
- async function addToCart(productId) {
-  try {
-    const response = await fetch('/add-to-cart', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ productId, quantity: 1 }),
-    });
+  async function addToCart(productId) {
+    try {
+      const response = await fetch("/add-to-cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ productId, quantity: 1 }),
+      });
 
-    const data = await response.json();
+      const data = await response.json();
 
-    if (response.ok) {
-      Swal.fire({
-        title: 'Added to Cart',
-        text: 'The product has been added to your cart',
-        icon: 'success',
-        // timer: 2000,
-        showConfirmButton: true,
-      }).then(() => {
-          window.location.href = '/cart';
-        
-      });
-    }else {
-      Swal.fire({
-        title: 'Error',
-        text:  'This product is already in your cart or an error occurred',
-        icon: 'info',
-        timer: 2000,
-        showConfirmButton: false,
-      });
-    }
-  } catch (error) {
-    console.error('Error adding to cart:', error);
-    if (error.message.includes('401')) {
-      Swal.fire({
-        title: 'Login Required',
-        text: 'Please log in to add items to your cart',
-        icon: 'warning',
-        timer: 2000,
-        showConfirmButton: false,
-      }).then(() => {
-        window.location.href = '/login';
-      });
-    } else {
-      Swal.fire({
-        title: 'Error',
-        text: 'There was an error adding the product to your cart',
-        icon: 'error',
-        timer: 2000,
-        showConfirmButton: false,
-      });
+      if (response.ok) {
+        Swal.fire({
+          title: "Added to Cart",
+          text: "The product has been added to your cart",
+          icon: "success",
+          // timer: 2000,
+          showConfirmButton: true,
+        }).then(() => {
+          window.location.href = "/cart";
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: "This product is already in your cart or an error occurred",
+          icon: "info",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      }
+    } catch (error) {
+      console.error("Error adding to cart:", error);
+      if (error.message.includes("401")) {
+        Swal.fire({
+          title: "Login Required",
+          text: "Please log in to add items to your cart",
+          icon: "warning",
+          timer: 2000,
+          showConfirmButton: false,
+        }).then(() => {
+          window.location.href = "/login";
+        });
+      } else {
+        Swal.fire({
+          title: "Error",
+          text: "There was an error adding the product to your cart",
+          icon: "error",
+          timer: 2000,
+          showConfirmButton: false,
+        });
+      }
     }
   }
-}
 </script>
 
 <%- include("../partials/user/footer") %>

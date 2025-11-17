@@ -43,7 +43,9 @@
       .table tr {
         border-bottom: 1px solid #f5f8fa;
       }
-      .btn-edit, .btn-unlist, .btn-list {
+      .btn-edit,
+      .btn-unlist,
+      .btn-list {
         background-color: #3498db;
         border: none;
         color: #ffffff;
@@ -51,7 +53,8 @@
         padding: 5px 15px;
         border-radius: 5px;
       }
-      .btn-unlist, .btn-list {
+      .btn-unlist,
+      .btn-list {
         background-color: #dc3545;
       }
       .btn-list {
@@ -127,8 +130,12 @@
                 placeholder="Search for Coupons"
               />
               <div>
-                <button class="btn btn-search" onclick="searchCoupons()">Search</button>
-                <button class="btn btn-clear" onclick="clearSearch()">Clear</button>
+                <button class="btn btn-search" onclick="searchCoupons()">
+                  Search
+                </button>
+                <button class="btn btn-clear" onclick="clearSearch()">
+                  Clear
+                </button>
               </div>
             </div>
             <button
@@ -153,36 +160,45 @@
               </thead>
               <tbody>
                 <% coupons.forEach(coupon => { %>
-                  <tr data-name="<%= coupon.name.toLowerCase() %>" data-id="<%= coupon._id %>">
-                    <td class="coupon-name"><%= coupon.name %></td>
-                    <td class="offer-price"><%= coupon.offerPrice %></td>
-                    <td class="minimum-price"><%= coupon.minimunPrice %></td>
-                    <td class="created-on"><%= new Date(coupon.createdOn).toLocaleDateString() %></td>
-                    <td class="expire-on"><%= new Date(coupon.expireOn).toLocaleDateString() %></td>
-                    <td class="status"><%= coupon.isList ? 'Listed' : 'Unlisted' %></td>
-                    <td>
-                      <button
-                        class="btn btn-edit"
-                        data-bs-toggle="modal"
-                        data-bs-target="#editCouponModal"
-                        data-id="<%= coupon._id %>"
-                        data-name="<%= coupon.name %>"
-                        data-offer-price="<%= coupon.offerPrice %>"
-                        data-minimum-price="<%= coupon.minimunPrice %>"
-                        data-expire-on="<%= coupon.expireOn.toISOString().split('T')[0] %>"
-                      >
-                        Edit
-                      </button>
-                      <button
-                        class="btn <%= coupon.isList ? 'btn-unlist' : 'btn-list' %> btn-toggle-list"
-                        data-id="<%= coupon._id %>"
-                        data-is-listed="<%= coupon.isList %>"
-                        onclick="toggleListCoupon('<%= coupon._id %>', '<%= coupon.isList %>')"
-                      >
-                        <%= coupon.isList ? 'Unlist' : 'List' %>
-                      </button>
-                    </td>
-                  </tr>
+                <tr
+                  data-name="<%= coupon.name.toLowerCase() %>"
+                  data-id="<%= coupon._id %>"
+                >
+                  <td class="coupon-name"><%= coupon.name %></td>
+                  <td class="offer-price"><%= coupon.offerPrice %></td>
+                  <td class="minimum-price"><%= coupon.minimunPrice %></td>
+                  <td class="created-on">
+                    <%= new Date(coupon.createdOn).toLocaleDateString() %>
+                  </td>
+                  <td class="expire-on">
+                    <%= new Date(coupon.expireOn).toLocaleDateString() %>
+                  </td>
+                  <td class="status">
+                    <%= coupon.isList ? 'Listed' : 'Unlisted' %>
+                  </td>
+                  <td>
+                    <button
+                      class="btn btn-edit"
+                      data-bs-toggle="modal"
+                      data-bs-target="#editCouponModal"
+                      data-id="<%= coupon._id %>"
+                      data-name="<%= coupon.name %>"
+                      data-offer-price="<%= coupon.offerPrice %>"
+                      data-minimum-price="<%= coupon.minimunPrice %>"
+                      data-expire-on="<%= coupon.expireOn.toISOString().split('T')[0] %>"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      class="btn <%= coupon.isList ? 'btn-unlist' : 'btn-list' %> btn-toggle-list"
+                      data-id="<%= coupon._id %>"
+                      data-is-listed="<%= coupon.isList %>"
+                      onclick="toggleListCoupon('<%= coupon._id %>', '<%= coupon.isList %>')"
+                    >
+                      <%= coupon.isList ? 'Unlist' : 'List' %>
+                    </button>
+                  </td>
+                </tr>
                 <% }) %>
               </tbody>
             </table>
@@ -211,7 +227,12 @@
             ></button>
           </div>
           <div class="modal-body">
-            <form id="addCouponForm" action="/admin/coupon/add" method="POST" novalidate>
+            <form
+              id="addCouponForm"
+              action="/admin/coupon/add"
+              method="POST"
+              novalidate
+            >
               <div class="mb-3">
                 <label for="couponName" class="form-label">Coupon Name</label>
                 <input
@@ -220,7 +241,10 @@
                   id="couponName"
                   class="form-control"
                 />
-                <div class="invalid-feedback">Coupon name must be at least 3 characters long and contain only letters, numbers, and spaces.</div>
+                <div class="invalid-feedback">
+                  Coupon name must be at least 3 characters long and contain
+                  only letters, numbers, and spaces.
+                </div>
               </div>
               <div class="mb-3">
                 <label for="offerPrice" class="form-label">Offer Price</label>
@@ -231,10 +255,14 @@
                   class="form-control"
                   min="0"
                 />
-                <div class="invalid-feedback">Offer price must be a positive number.</div>
+                <div class="invalid-feedback">
+                  Offer price must be a positive number.
+                </div>
               </div>
               <div class="mb-3">
-                <label for="minimumPrice" class="form-label">Minimum Price</label>
+                <label for="minimumPrice" class="form-label"
+                  >Minimum Price</label
+                >
                 <input
                   type="number"
                   name="minimunPrice"
@@ -242,7 +270,9 @@
                   class="form-control"
                   min="0"
                 />
-                <div class="invalid-feedback">Minimum price must be a positive number.</div>
+                <div class="invalid-feedback">
+                  Minimum price must be a positive number.
+                </div>
               </div>
               <div class="mb-3">
                 <label for="expireOn" class="form-label">Expire On</label>
@@ -252,7 +282,9 @@
                   id="expireOn"
                   class="form-control"
                 />
-                <div class="invalid-feedback">Expiration date must be in the future.</div>
+                <div class="invalid-feedback">
+                  Expiration date must be in the future.
+                </div>
               </div>
               <button type="submit" class="btn btn-primary">Add Coupon</button>
             </form>
@@ -284,17 +316,24 @@
             <form id="editCouponForm" novalidate>
               <input type="hidden" name="couponId" id="editCouponId" />
               <div class="mb-3">
-                <label for="editCouponName" class="form-label">Coupon Name</label>
+                <label for="editCouponName" class="form-label"
+                  >Coupon Name</label
+                >
                 <input
                   type="text"
                   name="name"
                   id="editCouponName"
                   class="form-control"
                 />
-                <div class="invalid-feedback">Coupon name must be at least 3 characters long and contain only letters, numbers, and spaces.</div>
+                <div class="invalid-feedback">
+                  Coupon name must be at least 3 characters long and contain
+                  only letters, numbers, and spaces.
+                </div>
               </div>
               <div class="mb-3">
-                <label for="editOfferPrice" class="form-label">Offer Price</label>
+                <label for="editOfferPrice" class="form-label"
+                  >Offer Price</label
+                >
                 <input
                   type="number"
                   name="offerPrice"
@@ -302,10 +341,14 @@
                   class="form-control"
                   min="0"
                 />
-                <div class="invalid-feedback">Offer price must be a positive number.</div>
+                <div class="invalid-feedback">
+                  Offer price must be a positive number.
+                </div>
               </div>
               <div class="mb-3">
-                <label for="editMinimumPrice" class="form-label">Minimum Price</label>
+                <label for="editMinimumPrice" class="form-label"
+                  >Minimum Price</label
+                >
                 <input
                   type="number"
                   name="minimunPrice"
@@ -313,7 +356,9 @@
                   class="form-control"
                   min="0"
                 />
-                <div class="invalid-feedback">Minimum price must be a positive number.</div>
+                <div class="invalid-feedback">
+                  Minimum price must be a positive number.
+                </div>
               </div>
               <div class="mb-3">
                 <label for="editExpireOn" class="form-label">Expire On</label>
@@ -323,9 +368,13 @@
                   id="editExpireOn"
                   class="form-control"
                 />
-                <div class="invalid-feedback">Expiration date must be in the future.</div>
+                <div class="invalid-feedback">
+                  Expiration date must be in the future.
+                </div>
               </div>
-              <button type="submit" class="btn btn-primary">Save Changes</button>
+              <button type="submit" class="btn btn-primary">
+                Save Changes
+              </button>
             </form>
           </div>
         </div>
@@ -342,8 +391,8 @@
           text: message,
           confirmButtonText: "OK",
           customClass: {
-            confirmButton: "btn btn-primary"
-          }
+            confirmButton: "btn btn-primary",
+          },
         });
       }
 
@@ -353,7 +402,7 @@
         let isValid = true;
 
         // Reset previous validation states
-        form.querySelectorAll(".form-control").forEach(input => {
+        form.querySelectorAll(".form-control").forEach((input) => {
           input.classList.remove("is-invalid");
         });
 
@@ -366,21 +415,29 @@
         }
 
         // Offer Price Validation
-        const offerPrice = parseFloat(form.querySelector('[name="offerPrice"]').value);
+        const offerPrice = parseFloat(
+          form.querySelector('[name="offerPrice"]').value
+        );
         if (isNaN(offerPrice) || offerPrice < 0) {
           form.querySelector('[name="offerPrice"]').classList.add("is-invalid");
           isValid = false;
         }
 
         // Minimum Price Validation
-        const minimumPrice = parseFloat(form.querySelector('[name="minimunPrice"]').value);
+        const minimumPrice = parseFloat(
+          form.querySelector('[name="minimunPrice"]').value
+        );
         if (isNaN(minimumPrice) || minimumPrice < 0) {
-          form.querySelector('[name="minimunPrice"]').classList.add("is-invalid");
+          form
+            .querySelector('[name="minimunPrice"]')
+            .classList.add("is-invalid");
           isValid = false;
         }
 
         // Expiration Date Validation
-        const expireOn = new Date(form.querySelector('[name="expireOn"]').value);
+        const expireOn = new Date(
+          form.querySelector('[name="expireOn"]').value
+        );
         const today = new Date();
         today.setHours(0, 0, 0, 0); // Normalize to start of day
         if (isNaN(expireOn.getTime()) || expireOn <= today) {
@@ -393,10 +450,12 @@
 
       // Search Coupons
       function searchCoupons() {
-        const searchTerm = document.getElementById("searchInput").value.toLowerCase();
+        const searchTerm = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
         const rows = document.querySelectorAll("#couponTable tbody tr");
 
-        rows.forEach(row => {
+        rows.forEach((row) => {
           const couponName = row.getAttribute("data-name");
           if (couponName.includes(searchTerm)) {
             row.style.display = "";
@@ -410,13 +469,13 @@
       function clearSearch() {
         document.getElementById("searchInput").value = "";
         const rows = document.querySelectorAll("#couponTable tbody tr");
-        rows.forEach(row => {
+        rows.forEach((row) => {
           row.style.display = "";
         });
       }
 
       // Populate Edit Coupon Modal
-      document.querySelectorAll(".btn-edit").forEach(button => {
+      document.querySelectorAll(".btn-edit").forEach((button) => {
         button.addEventListener("click", function () {
           const couponId = this.getAttribute("data-id");
           const name = this.getAttribute("data-name");
@@ -433,88 +492,111 @@
       });
 
       // Client-Side Validation for Add Coupon Form
-      document.getElementById("addCouponForm").addEventListener("submit", function (e) {
-        if (!validateForm("addCouponForm")) {
-          e.preventDefault();
-        }
-      });
+      document
+        .getElementById("addCouponForm")
+        .addEventListener("submit", function (e) {
+          if (!validateForm("addCouponForm")) {
+            e.preventDefault();
+          }
+        });
 
       // Client-Side Validation and AJAX for Edit Coupon Form
-      document.getElementById("editCouponForm").addEventListener("submit", async function (e) {
-        e.preventDefault();
+      document
+        .getElementById("editCouponForm")
+        .addEventListener("submit", async function (e) {
+          e.preventDefault();
 
-        if (!validateForm("editCouponForm")) {
-          return;
-        }
-
-        const formData = new FormData(this);
-        const data = Object.fromEntries(formData);
-
-        try {
-          const response = await fetch(`/admin/coupon/edit/${data.couponId}`, {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              name: data.name,
-              offerPrice: Number(data.offerPrice),
-              minimunPrice: Number(data.minimunPrice),
-              expireOn: data.expireOn,
-            }),
-          });
-
-          const result = await response.json();
-
-          if (!response.ok) {
-            throw new Error(result.error || "Failed to edit coupon");
+          if (!validateForm("editCouponForm")) {
+            return;
           }
 
-          // Update the table row dynamically
-          const row = document.querySelector(`tr[data-id="${data.couponId}"]`);
-          row.querySelector(".coupon-name").textContent = data.name;
-          row.querySelector(".offer-price").textContent = data.offerPrice;
-          row.querySelector(".minimum-price").textContent = data.minimunPrice;
-          row.querySelector(".expire-on").textContent = new Date(data.expireOn).toLocaleDateString();
-          row.setAttribute("data-name", data.name.toLowerCase());
+          const formData = new FormData(this);
+          const data = Object.fromEntries(formData);
 
-          // Update the edit button's data attributes
-          const editButton = row.querySelector(".btn-edit");
-          editButton.setAttribute("data-name", data.name);
-          editButton.setAttribute("data-offer-price", data.offerPrice);
-          editButton.setAttribute("data-minimum-price", data.minimunPrice);
-          editButton.setAttribute("data-expire-on", data.expireOn);
+          try {
+            const response = await fetch(
+              `/admin/coupon/edit/${data.couponId}`,
+              {
+                method: "PUT",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({
+                  name: data.name,
+                  offerPrice: Number(data.offerPrice),
+                  minimunPrice: Number(data.minimunPrice),
+                  expireOn: data.expireOn,
+                }),
+              }
+            );
 
-          // Close the modal
-          const modal = bootstrap.Modal.getInstance(document.getElementById("editCouponModal"));
-          modal.hide();
+            const result = await response.json();
 
-          showAlert("Coupon updated successfully", "success");
-        } catch (error) {
-          console.error("Error editing coupon:", error);
-          showAlert(error.message, "error");
-        }
-      });
+            if (!response.ok) {
+              throw new Error(result.error || "Failed to edit coupon");
+            }
+
+            // Update the table row dynamically
+            const row = document.querySelector(
+              `tr[data-id="${data.couponId}"]`
+            );
+            row.querySelector(".coupon-name").textContent = data.name;
+            row.querySelector(".offer-price").textContent = data.offerPrice;
+            row.querySelector(".minimum-price").textContent = data.minimunPrice;
+            row.querySelector(".expire-on").textContent = new Date(
+              data.expireOn
+            ).toLocaleDateString();
+            row.setAttribute("data-name", data.name.toLowerCase());
+
+            // Update the edit button's data attributes
+            const editButton = row.querySelector(".btn-edit");
+            editButton.setAttribute("data-name", data.name);
+            editButton.setAttribute("data-offer-price", data.offerPrice);
+            editButton.setAttribute("data-minimum-price", data.minimunPrice);
+            editButton.setAttribute("data-expire-on", data.expireOn);
+
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(
+              document.getElementById("editCouponModal")
+            );
+            modal.hide();
+
+            showAlert("Coupon updated successfully", "success");
+          } catch (error) {
+            console.error("Error editing coupon:", error);
+            showAlert(error.message, "error");
+          }
+        });
 
       // AJAX for Toggle List/Unlist
       async function toggleListCoupon(couponId, isListed) {
         try {
           const res = await fetch(`/admin/coupon/toggle-list/${couponId}`, {
             method: "PATCH",
-            headers: { "Content-Type": "application/json" }
+            headers: { "Content-Type": "application/json" },
           });
           const json = await res.json();
           if (!res.ok) throw new Error(json.error || "Failed to toggle status");
 
           // Update DOM using the server-returned `json.isList`
           const row = document.querySelector(`tr[data-id="${couponId}"]`);
-          row.querySelector(".status").textContent = json.isList ? "Listed" : "Unlisted";
+          row.querySelector(".status").textContent = json.isList
+            ? "Listed"
+            : "Unlisted";
           const btn = row.querySelector(".btn-toggle-list");
           btn.textContent = json.isList ? "Unlist" : "List";
-          btn.className = `btn ${json.isList ? "btn-unlist" : "btn-list"} btn-toggle-list`;
-          btn.setAttribute("onclick", `toggleListCoupon('${couponId}', ${json.isList})`);
+          btn.className = `btn ${
+            json.isList ? "btn-unlist" : "btn-list"
+          } btn-toggle-list`;
+          btn.setAttribute(
+            "onclick",
+            `toggleListCoupon('${couponId}', ${json.isList})`
+          );
 
-          showAlert(`Coupon ${json.isList ? 'listed' : 'unlisted'} successfully`, "success");
+          showAlert(
+            `Coupon ${json.isList ? "listed" : "unlisted"} successfully`,
+            "success"
+          );
         } catch (err) {
           console.error("Toggle failed:", err);
           showAlert("Could not change listing status: " + err.message, "error");
@@ -522,17 +604,17 @@
       }
 
       // Display server-side errors using SweetAlert (for addCoupon)
-      if (error) { 
+      if (error) {
         Swal.fire({
           icon: "error",
           title: "Error",
           text: "<%= error %>",
           confirmButtonText: "OK",
           customClass: {
-            confirmButton: "btn btn-primary"
-          }
+            confirmButton: "btn btn-primary",
+          },
         });
-     }
+      }
     </script>
   </body>
 </html>

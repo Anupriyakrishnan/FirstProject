@@ -47,7 +47,7 @@ const userSchema = new Schema({
   wallet: {
     type: Schema.Types.ObjectId,
     ref: "Wallet",
-    default: null
+    default: null,
   },
   orderHistory: [
     {
@@ -61,26 +61,28 @@ const userSchema = new Schema({
   },
   referredBy: {
     type: String, // store referral code or ref to userId
-    default: null
+    default: null,
   },
   referralCode: {
     type: String,
-    unique: true,    // unique for non-null values
-    sparse: true,    // allow multiple docs with no field / null
-    default: null
+    unique: true, // unique for non-null values
+    sparse: true, // allow multiple docs with no field / null
+    default: null,
   },
   referralLink: {
     type: String,
-    default: null
+    default: null,
   },
   redeemed: {
     type: Boolean,
     default: false,
   },
-  redeemedUsers: [{
-  type: Schema.Types.ObjectId,
-  ref: "User",
-}],
+  redeemedUsers: [
+    {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
+  ],
   searchHistory: [
     {
       category: {

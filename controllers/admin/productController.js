@@ -26,7 +26,7 @@ const productInfo = async (req, res) => {
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit)
-      .lean()
+      .lean();
 
     const totalProducts = await product.countDocuments(query);
     const totalPages = Math.ceil(totalProducts / limit);
@@ -37,7 +37,6 @@ const productInfo = async (req, res) => {
       isDeleted: false,
     });
 
-  
     res.render("products", {
       products: productData,
       currentPage: page,
@@ -46,8 +45,6 @@ const productInfo = async (req, res) => {
       cat: categories,
       search,
       brand: brands,
-      
-
     });
   } catch (error) {
     console.error("Error fetching products:", error);
@@ -80,12 +77,10 @@ const processImages = async (req, res, next) => {
     }
 
     if (!req.files || req.files.length === 0) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Please upload at least 3 images for new products",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Please upload at least 3 images for new products",
+      });
     }
 
     if (req.route.path === "/add-product" && req.files.length < 3) {
@@ -94,12 +89,10 @@ const processImages = async (req, res, next) => {
           fs.unlinkSync(file.path);
         }
       });
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Please upload at least 3 images for new products",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Please upload at least 3 images for new products",
+      });
     }
 
     const processedImages = [];
@@ -174,7 +167,6 @@ const addProducts = async (req, res) => {
       });
     }
 
-
     const newProduct = new product({
       productName,
       brand,
@@ -187,7 +179,6 @@ const addProducts = async (req, res) => {
       isListed: true,
       isBlocked: false,
     });
-
 
     const savedProduct = await newProduct.save();
 

@@ -195,27 +195,6 @@ const downloadReport = async (req, res) => {
         });
         yPos += 20;
 
-        // Add order items
-        // doc.moveDown(0.5);
-        // doc.fontSize(10).text(`Items for Order ${order.orderId}:`, xPos - colWidths.reduce((a, b) => a + b, 0), yPos);
-        // yPos += 15;
-        // order.orderedItem.forEach(item => {
-        //   xPos = 30;
-        //   const itemRow = [
-        //     item.Product?.productName || 'N/A',
-        //     item.quantity?.toString() || '0',
-        //     `₹${(item.price || 0).toLocaleString('en-IN')}`,
-        //     `₹${(item.discountedPrice || item.price || 0).toLocaleString('en-IN')}`,
-        //     item.status || '—',
-        //   ];
-        //   itemRow.forEach((cell, i) => {
-        //     doc.text(cell, xPos, yPos, { width: colWidths[i % colWidths.length], align: 'left' });
-        //     xPos += colWidths[i % colWidths.length];
-        //   });
-        //   yPos += 15;
-        // });
-        // yPos += 10;
-
         // Add a new page if necessary
         if (yPos > 700) {
           doc.addPage();

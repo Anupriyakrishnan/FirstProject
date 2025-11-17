@@ -1,169 +1,182 @@
 <%- include("../../views/partials/user/header") %>
 <style>
-    body {
-        background-color: #f5f5f5;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        height: 100vh;
-        margin: 0;
-        font-family: Arial, sans-serif;
-    }
-    
-    .otp-container {
-        background-color: white;
-        padding: 30px;
-        border-radius: 8px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        width: 100%;
-        max-width: 400px;
-        text-align: center;
-        margin-left: 570px;
-        margin-top: 80px;
-        margin-bottom: 40px
-    }
-    
-    .otp-title {
-        font-size: 24px;
-        margin-bottom: 20px;
-        color: #333;
-    }
-    
-    .form-group {
-        margin-bottom: 20px;
-    }
-    
-    .form-control {
-        width: 100%;
-        padding: 10px;
-        border: 1px solid #ddd;
-        border-radius: 4px;
-        font-size: 16px;
-        text-align: center;
-    }
-    
-    .btn {
-        padding: 10px 20px;
-        background-color: #d4c276;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-size: 16px;
-        width: 100%;
-    }
-    
-    .btn:hover {
-        background-color: #c1af63;
-    }
-    
-    .resend-link {
-        display: block;
-        margin-top: 10px;
-        color: #6e8a9e;
-        text-decoration: none;
-        font-size: 14px;
-    }
-    
-    .resend-link:hover {
-        text-decoration: underline;
-    }
+  body {
+    background-color: #f5f5f5;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+  }
+
+  .otp-container {
+    background-color: white;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    text-align: center;
+    margin-left: 570px;
+    margin-top: 80px;
+    margin-bottom: 40px;
+  }
+
+  .otp-title {
+    font-size: 24px;
+    margin-bottom: 20px;
+    color: #333;
+  }
+
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  .form-control {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .btn {
+    padding: 10px 20px;
+    background-color: #d4c276;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    width: 100%;
+  }
+
+  .btn:hover {
+    background-color: #c1af63;
+  }
+
+  .resend-link {
+    display: block;
+    margin-top: 10px;
+    color: #6e8a9e;
+    text-decoration: none;
+    font-size: 14px;
+  }
+
+  .resend-link:hover {
+    text-decoration: underline;
+  }
 </style>
 
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css"
+/>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
 <body>
-    <div class="otp-container">
-        <h2 class="otp-title">Verify OTP</h2>
-        <p>Enter the OTP sent to your new email</p>
-        <form id="otp-form">
-            <div class="form-group">
-                <input type="text" class="form-control" name="otp" placeholder="Enter OTP" required>
-            </div>
-            <button type="submit" class="btn">Verify OTP</button>
-        </form>
-        <a href="#" class="resend-link" onclick="resendOtp()">Resend OTP</a>
-    </div>
+  <div class="otp-container">
+    <h2 class="otp-title">Verify OTP</h2>
+    <p>Enter the OTP sent to your new email</p>
+    <form id="otp-form">
+      <div class="form-group">
+        <input
+          type="text"
+          class="form-control"
+          name="otp"
+          placeholder="Enter OTP"
+          required
+        />
+      </div>
+      <button type="submit" class="btn">Verify OTP</button>
+    </form>
+    <a href="#" class="resend-link" onclick="resendOtp()">Resend OTP</a>
+  </div>
 
-    <script>
-        document.getElementById('otp-form').addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const otp = document.querySelector('input[name="otp"]').value;
-  const submitButton = e.target.querySelector('.btn');
-  submitButton.disabled = true;
+  <script>
+    document
+      .getElementById("otp-form")
+      .addEventListener("submit", async (e) => {
+        e.preventDefault();
+        const otp = document.querySelector('input[name="otp"]').value;
+        const submitButton = e.target.querySelector(".btn");
+        submitButton.disabled = true;
 
-  try {
-    const response = await fetch('/verifyChangeEmailOtp', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ otp }),
-      credentials: 'include'
-    });
+        try {
+          const response = await fetch("/verifyChangeEmailOtp", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ otp }),
+            credentials: "include",
+          });
 
-    const result = await response.json();
-    if (response.ok && result.success) {
-      Swal.fire({
-        icon: 'success',
-        title: 'Success',
-        text: result.message || 'Email updated successfully!',
-        timer: 1500
-      }).then(() => {
-        window.location.href = '/profile';
-      });
-    } else {
-      // Handle error response
-      document.querySelector('input[name="otp"]').classList.add('error');
-      Swal.fire({
-        icon: 'error',
-        title: 'Error',
-        text: result.message || 'The OTP you entered is incorrect. Please try again.',
-        confirmButtonColor: '#C6A969'
-      });
-      submitButton.disabled = false; // Re-enable button for retry
-    }
-  } catch (error) {
-    Swal.fire({
-      icon: 'error',
-      title: 'Error',
-      text: 'An error occurred while verifying OTP. Please try again.',
-      confirmButtonColor: '#C6A969'
-    });
-    submitButton.disabled = false; // Re-enable button for retry
-  }
-});
-
-        async function resendOtp() {
-            try {
-                const response = await fetch('/resendChangeEmailOtp', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    credentials: 'include'
-                });
-
-                const result = await response.json();
-                if (response.ok) {
-                    Swal.fire({
-                        icon: 'success',
-                        title: 'OTP Resent',
-                        text: 'A new OTP has been sent to your email.',
-                        timer: 1500
-                    });
-                } else {
-                    Swal.fire({
-                        icon: 'error',
-                        title: 'Error',
-                        text: result.message || 'Failed to resend OTP'
-                    });
-                }
-            } catch (error) {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error',
-                    text: 'An error occurred while resending OTP'
-                });
-            }
+          const result = await response.json();
+          if (response.ok && result.success) {
+            Swal.fire({
+              icon: "success",
+              title: "Success",
+              text: result.message || "Email updated successfully!",
+              timer: 1500,
+            }).then(() => {
+              window.location.href = "/profile";
+            });
+          } else {
+            // Handle error response
+            document.querySelector('input[name="otp"]').classList.add("error");
+            Swal.fire({
+              icon: "error",
+              title: "Error",
+              text:
+                result.message ||
+                "The OTP you entered is incorrect. Please try again.",
+              confirmButtonColor: "#C6A969",
+            });
+            submitButton.disabled = false; // Re-enable button for retry
+          }
+        } catch (error) {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: "An error occurred while verifying OTP. Please try again.",
+            confirmButtonColor: "#C6A969",
+          });
+          submitButton.disabled = false; // Re-enable button for retry
         }
-    </script>
+      });
+
+    async function resendOtp() {
+      try {
+        const response = await fetch("/resendChangeEmailOtp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+        });
+
+        const result = await response.json();
+        if (response.ok) {
+          Swal.fire({
+            icon: "success",
+            title: "OTP Resent",
+            text: "A new OTP has been sent to your email.",
+            timer: 1500,
+          });
+        } else {
+          Swal.fire({
+            icon: "error",
+            title: "Error",
+            text: result.message || "Failed to resend OTP",
+          });
+        }
+      } catch (error) {
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: "An error occurred while resending OTP",
+        });
+      }
+    }
+  </script>
 </body>
 <%- include("../../views/partials/user/footer") %>

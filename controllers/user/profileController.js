@@ -1,7 +1,7 @@
 const User = require("../../models/userSchema");
 const Address = require("../../models/addressSchema");
-const Cart = require('../../models/cartSchema')
-const Referral = require('../../models/referralSchema');
+const Cart = require("../../models/cartSchema");
+const Referral = require("../../models/referralSchema");
 const { ObjectId } = require("mongoose").Types;
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
@@ -74,7 +74,7 @@ const ensureAuthenticated = (req, res, next) => {
 //         req.session.user.referralCode = referral.referralCode;
 //       }
 //     }
-   
+
 //     let cartCount = 0;
 //     if (req.session.user) {
 //       const userCart = await Cart.findOne({ userId: req.session.user._id });
@@ -97,25 +97,25 @@ const loadProfile = async (req, res) => {
     const user = req.session.user;
     const userData = await User.findOne({ _id: user });
     const referral = await Referral.findOne({ userId: user }).lean();
-    
+
     // Initialize referralLink with empty string
-    let referralLink = '';
-    
+    let referralLink = "";
+
     // Build referral link if referral code exists
     if (referral && referral.referralCode) {
       userData.referralCode = referral.referralCode;
-      
+
       // Build the full referral link
       const protocol = req.protocol;
-      const host = req.get('host');
+      const host = req.get("host");
       referralLink = `${protocol}://${host}/signup?ref=${referral.referralCode}`;
-      
+
       // keep session in sync
-      if (req.session.user && typeof req.session.user === 'object') {
+      if (req.session.user && typeof req.session.user === "object") {
         req.session.user.referralCode = referral.referralCode;
       }
     }
-   
+
     let cartCount = 0;
     if (req.session.user) {
       const userCart = await Cart.findOne({ userId: req.session.user._id });
@@ -123,13 +123,13 @@ const loadProfile = async (req, res) => {
         cartCount = userCart.items.length;
       }
     }
-    
+
     // Make sure ALL variables are passed
     return res.render("profile", {
       user: userData,
       cartCount: cartCount,
       referral: referral || {},
-      referralLink: referralLink  // ✅ This must be included
+      referralLink: referralLink, // ✅ This must be included
     });
   } catch (error) {
     console.error("Error loading profile:", error);
@@ -256,7 +256,7 @@ const Editprofile = async (req, res) => {
         cartCount = userCart.items.length; // Updated from products to items
       }
     }
-    res.render("editProfile", { user: userData ,cartCount});
+    res.render("editProfile", { user: userData, cartCount });
   } catch (error) {
     console.error("Error rendering edit profile page:", error);
     res.redirect("/pageNotFound");
@@ -291,17 +291,14 @@ const getProfile = async (req, res) => {
         cartCount = userCart.items.length; // Updated from products to items
       }
     }
-    
-    
-    res.render("profile", { user ,cartCount}); // Assuming your view is named profile.ejs
+
+    res.render("profile", { user, cartCount }); // Assuming your view is named profile.ejs
   } catch (error) {
     res.status(500).json({ message: "Server error" });
   }
 };
 
 const updateProfile = async (req, res) => {
-
-
   upload(req, res, async (err) => {
     if (err) {
       console.error("Multer error:", err);
@@ -334,7 +331,6 @@ const updateProfile = async (req, res) => {
       };
 
       if (req.file) {
-        
         const user = await User.findById(userId);
         if (
           user.profileImage &&
@@ -358,36 +354,30 @@ const updateProfile = async (req, res) => {
         }
         // Save the image to disk
         const uploadPath = path.join(__dirname, "../../public/uploads/profile");
-       
+
         try {
           fs.mkdirSync(uploadPath, { recursive: true });
-          
         } catch (fsError) {
           console.error(`Error creating upload directory: ${fsError.message}`);
-          return res
-            .status(500)
-            .json({
-              message: `Failed to create upload directory: ${fsError.message}`,
-            });
+          return res.status(500).json({
+            message: `Failed to create upload directory: ${fsError.message}`,
+          });
         }
         const filename = `${userId}-${Date.now()}.jpg`;
         const filePath = path.join(uploadPath, filename);
         try {
           fs.writeFileSync(filePath, req.file.buffer);
-          
+
           // FIXED: Use consistent path format
           updateData.profileImage = `/uploads/profile/${filename}`;
         } catch (fsError) {
           console.error(`Error saving profile image: ${fsError.message}`);
-          return res
-            .status(500)
-            .json({
-              message: `Failed to save profile image: ${fsError.message}`,
-            });
+          return res.status(500).json({
+            message: `Failed to save profile image: ${fsError.message}`,
+          });
         }
       }
 
-      
       const updatedUser = await User.findByIdAndUpdate(
         userId,
         { $set: updateData },
@@ -418,7 +408,6 @@ const changeEmail = async (req, res) => {
         .json({ message: "User not authenticated. Please log in." });
     }
     const userId = req.session.user._id || req.session.user;
-  
 
     const { newEmail } = req.body;
     if (!newEmail || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(newEmail)) {
@@ -465,7 +454,6 @@ const getChangeEmailOtpPage = async (req, res) => {
     console.log("Fetching user with ID:", userId);
     const user = await User.findById(userId).select("-password");
     if (!user) {
-      
       return res.redirect("/profile");
     }
     let cartCount = 0;
@@ -475,8 +463,8 @@ const getChangeEmailOtpPage = async (req, res) => {
         cartCount = userCart.items.length; // Updated from products to items
       }
     }
-    
-    res.render("changeEmailOtp", { user ,cartCount});
+
+    res.render("changeEmailOtp", { user, cartCount });
   } catch (error) {
     console.error("Error rendering OTP page:", error);
     res.redirect("/pageNotFound");
@@ -496,7 +484,7 @@ const verifyChangeEmailOtp = async (req, res) => {
       const updatedUser = await User.findByIdAndUpdate(
         userId,
         { $set: { email: newEmail } },
-        { new: true}
+        { new: true }
       ).select("-password");
 
       if (!updatedUser) {
@@ -625,12 +613,10 @@ const addAddress = async (req, res) => {
       !city ||
       !addressType
     ) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "All required fields must be provided",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "All required fields must be provided",
+      });
     }
 
     // Validate pincode (6-digit number)
@@ -642,12 +628,10 @@ const addAddress = async (req, res) => {
 
     // Validate mobile (10-digit number)
     if (!/^\d{10}$/.test(mobile)) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Mobile number must be a 10-digit number",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Mobile number must be a 10-digit number",
+      });
     }
 
     // Validate addressType
@@ -719,7 +703,6 @@ const removeAddress = async (req, res) => {
     }
 
     // Debugging
-    
 
     // Find the address document for the user
     const addressDoc = await Address.findOne({ userId: userId });
@@ -756,8 +739,6 @@ const removeAddress = async (req, res) => {
 
 const editAddress = async (req, res) => {
   try {
-
-
     // Extract user ID from session
     const userId = req.session.user?._id || req.session.user;
     if (!userId) {
@@ -789,7 +770,6 @@ const editAddress = async (req, res) => {
 
     const addressId = req.params.addressId;
     if (!ObjectId.isValid(addressId)) {
-     
       return res
         .status(400)
         .json({ success: false, message: "Invalid address ID" });
@@ -830,17 +810,14 @@ const editAddress = async (req, res) => {
         city,
         addressType,
       });
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "All required fields must be provided",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "All required fields must be provided",
+      });
     }
 
     // Validate pincode (6-digit number)
     if (!/^\d{6}$/.test(pincode)) {
-      
       return res
         .status(400)
         .json({ success: false, message: "Pincode must be a 6-digit number" });
@@ -848,18 +825,14 @@ const editAddress = async (req, res) => {
 
     // Validate mobile (10-digit number)
     if (!/^\d{10}$/.test(mobile)) {
-      
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "Mobile number must be a 10-digit number",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "Mobile number must be a 10-digit number",
+      });
     }
 
     // Validate addressType
     if (!["home", "office"].includes(addressType)) {
-      
       return res
         .status(400)
         .json({ success: false, message: "Invalid address type" });
@@ -915,7 +888,6 @@ const editAddress = async (req, res) => {
     addressDoc.address[addressIndex] = updatedAddress;
     await addressDoc.save();
 
-   
     res
       .status(200)
       .json({ success: true, message: "Address updated successfully" });
@@ -1032,17 +1004,15 @@ const selectAddress = async (req, res) => {
 
     user.selectedAddress = new ObjectId(addressId);
     await user.save();
-   
+
     res.json({ success: true, message: "Address selected successfully" });
   } catch (error) {
     console.error("Error in /selectAddress:", error);
-    res
-      .status(500)
-      .json({
-        success: false,
-        message: "Server error. Please try again.",
-        error: error.message,
-      });
+    res.status(500).json({
+      success: false,
+      message: "Server error. Please try again.",
+      error: error.message,
+    });
   }
 };
 

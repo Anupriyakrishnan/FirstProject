@@ -2,19 +2,19 @@ const User = require("../../models/userSchema");
 const Category = require("../../models/categorySchema");
 const Product = require("../../models/productSchema");
 const Brand = require("../../models/brandSchema");
-const Offer = require('../../models/offerSchema')
-const Cart = require('../../models/cartSchema')
-const Wallet = require('../../models/walletSchema')
-const Referral = require('../../models/referralSchema')
-const { generateUniqueReferral } = require('../../controllers/user/referralController');
-
+const Offer = require("../../models/offerSchema");
+const Cart = require("../../models/cartSchema");
+const Wallet = require("../../models/walletSchema");
+const Referral = require("../../models/referralSchema");
+const {
+  generateUniqueReferral,
+} = require("../../controllers/user/referralController");
 
 const env = require("dotenv").config();
 const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
-const SITE_URL = process.env.SITE_URL || 'http://localhost:4000';
+const SITE_URL = process.env.SITE_URL || "http://localhost:4000";
 const REFERRAL_REWARD = 1000;
-
 
 const pageNotFound = async (req, res) => {
   try {
@@ -77,7 +77,6 @@ const loadHomepage = async (req, res) => {
       ],
     });
 
-
     const productsWithOffers = productData.map((product) => {
       let applicableOffer = null;
       let discountedPrice = product.salePrice;
@@ -125,9 +124,19 @@ const loadHomepage = async (req, res) => {
 
     if (user) {
       const userData = await User.findOne({ _id: user });
-      res.render("home", { user: userData, products: productsWithOffers ,offers,cartCount});
+      res.render("home", {
+        user: userData,
+        products: productsWithOffers,
+        offers,
+        cartCount,
+      });
     } else {
-      return res.render("home", { user: null, products: productsWithOffers ,offers,cartCount});
+      return res.render("home", {
+        user: null,
+        products: productsWithOffers,
+        offers,
+        cartCount,
+      });
     }
   } catch (error) {
     console.log("home page not found");
@@ -170,11 +179,8 @@ const securePassword = async (password) => {
   try {
     const passwordHash = await bcrypt.hash(password, 10);
     return passwordHash;
-  } catch (error) {
-    
-  }
+  } catch (error) {}
 };
-
 
 // SIGNUP - Store user data in session
 const signup = async (req, res) => {
@@ -210,12 +216,15 @@ const signup = async (req, res) => {
     // Store OTP and user data in session
     req.session.userOtp = otp;
     req.session.otpExpires = Date.now() + 60 * 1000; // 60 seconds
-    req.session.userData = { 
-      name, 
-      email, 
-      phone, 
+    req.session.userData = {
+      name,
+      email,
+      phone,
       password,
-      referralCode: referralCode && String(referralCode).trim() ? String(referralCode).trim().toUpperCase() : null
+      referralCode:
+        referralCode && String(referralCode).trim()
+          ? String(referralCode).trim().toUpperCase()
+          : null,
     };
 
     console.log("OTP generated:", otp);
@@ -243,7 +252,7 @@ const verifyOtp = async (req, res) => {
     if (!otp) {
       return res.status(400).json({
         success: false,
-        message: "OTP is required"
+        message: "OTP is required",
       });
     }
 
@@ -251,7 +260,7 @@ const verifyOtp = async (req, res) => {
     if (!req.session.userOtp || !req.session.userData) {
       return res.status(400).json({
         success: false,
-        message: "Session expired. Please signup again."
+        message: "Session expired. Please signup again.",
       });
     }
 
@@ -262,7 +271,7 @@ const verifyOtp = async (req, res) => {
       delete req.session.userData;
       return res.status(400).json({
         success: false,
-        message: "OTP has expired. Please request a new one."
+        message: "OTP has expired. Please request a new one.",
       });
     }
 
@@ -272,7 +281,7 @@ const verifyOtp = async (req, res) => {
       console.log("❌ OTP mismatch. Expected:", sessionOtp, "Got:", otp);
       return res.status(400).json({
         success: false,
-        message: "Invalid OTP. Please try again."
+        message: "Invalid OTP. Please try again.",
       });
     }
 
@@ -287,7 +296,7 @@ const verifyOtp = async (req, res) => {
     if (!userDataCopy.password) {
       return res.status(400).json({
         success: false,
-        message: "User data incomplete"
+        message: "User data incomplete",
       });
     }
 
@@ -300,7 +309,7 @@ const verifyOtp = async (req, res) => {
       email: userDataCopy.email,
       phone: userDataCopy.phone,
       password: passwordHash,
-      redeemedUsers: []
+      redeemedUsers: [],
     };
 
     // Check if referral code was provided
@@ -333,7 +342,7 @@ const verifyOtp = async (req, res) => {
         console.error("❌ User save error:", err);
         return res.status(500).json({
           success: false,
-          message: "Error creating account. Please try again."
+          message: "Error creating account. Please try again.",
         });
       }
     }
@@ -344,7 +353,7 @@ const verifyOtp = async (req, res) => {
         userId: newUser._id,
         referralCode: newUser.referralCode,
         referredUsers: [],
-        isActive: true
+        isActive: true,
       });
       await newUserReferral.save();
       console.log("✅ Referral document created for User B");
@@ -354,7 +363,7 @@ const verifyOtp = async (req, res) => {
 
     // ===== PROCESS REFERRAL REWARD FOR USER A =====
     let rewardMessage = "Account created successfully!";
-    
+
     if (referralCodeUsed) {
       try {
         console.log("\n🎁 PROCESSING REFERRAL REWARD");
@@ -362,7 +371,7 @@ const verifyOtp = async (req, res) => {
 
         // Find User A (the referrer)
         const userA = await User.findOne({
-          referralCode: referralCodeUsed
+          referralCode: referralCodeUsed,
         });
 
         if (!userA) {
@@ -373,15 +382,19 @@ const verifyOtp = async (req, res) => {
           console.log(`   User A ID: ${userA._id}`);
 
           // Check if User B already rewarded User A (prevent duplicate)
-          const alreadyRewarded = userA.redeemedUsers && userA.redeemedUsers.some(
-            userId => userId.toString() === newUser._id.toString()
-          );
+          const alreadyRewarded =
+            userA.redeemedUsers &&
+            userA.redeemedUsers.some(
+              (userId) => userId.toString() === newUser._id.toString()
+            );
 
           if (alreadyRewarded) {
             console.log("⚠️ Reward already given to User A for User B");
             rewardMessage = "Account created! (Referral already credited)";
           } else {
-            console.log(`💰 Crediting ₹${REFERRAL_REWARD} to User A's wallet...`);
+            console.log(
+              `💰 Crediting ₹${REFERRAL_REWARD} to User A's wallet...`
+            );
 
             // CREATE TRANSACTION DESCRIPTION
             const txDescription = `Referral bonus - ${newUser.name} (${newUser.email}) joined using code ${referralCodeUsed}`;
@@ -395,9 +408,9 @@ const verifyOtp = async (req, res) => {
                   userId: userA._id,
                   referralCode: referralCodeUsed,
                   isActive: true,
-                  createdAt: new Date()
+                  createdAt: new Date(),
                 },
-                $addToSet: { referredUsers: newUser._id }
+                $addToSet: { referredUsers: newUser._id },
               },
               { upsert: true }
             );
@@ -417,35 +430,41 @@ const verifyOtp = async (req, res) => {
                   $inc: { balance: REFERRAL_REWARD },
                   $push: {
                     transactions: {
-                      $each: [{
-                        amount: REFERRAL_REWARD,
-                        type: "credit",
-                        date: txDate,
-                        description: txDescription
-                      }],
-                      $position: 0  // Add to beginning
-                    }
-                  }
+                      $each: [
+                        {
+                          amount: REFERRAL_REWARD,
+                          type: "credit",
+                          date: txDate,
+                          description: txDescription,
+                        },
+                      ],
+                      $position: 0, // Add to beginning
+                    },
+                  },
                 },
-                { new: true }  // IMPORTANT: Return updated document
+                { new: true } // IMPORTANT: Return updated document
               );
 
               console.log(`✅ Wallet updated for User A`);
               console.log(`   New balance: ₹${walletDoc.balance}`);
-              console.log(`   Total transactions: ${walletDoc.transactions.length}`);
+              console.log(
+                `   Total transactions: ${walletDoc.transactions.length}`
+              );
             } else {
               // WALLET DOESN'T EXIST - Create new wallet with initial balance
               console.log("🆕 Creating new wallet for User A...");
-              
+
               walletDoc = await Wallet.create({
                 userId: userA._id,
                 balance: REFERRAL_REWARD,
-                transactions: [{
-                  amount: REFERRAL_REWARD,
-                  type: "credit",
-                  date: txDate,
-                  description: txDescription
-                }]
+                transactions: [
+                  {
+                    amount: REFERRAL_REWARD,
+                    type: "credit",
+                    date: txDate,
+                    description: txDescription,
+                  },
+                ],
               });
 
               console.log(`✅ New wallet created for User A`);
@@ -453,7 +472,10 @@ const verifyOtp = async (req, res) => {
             }
 
             // STEP 3: Link wallet to User A if not already linked
-            if (!userA.wallet || userA.wallet.toString() !== walletDoc._id.toString()) {
+            if (
+              !userA.wallet ||
+              userA.wallet.toString() !== walletDoc._id.toString()
+            ) {
               userA.wallet = walletDoc._id;
               console.log("✅ Wallet linked to User A");
             }
@@ -462,16 +484,24 @@ const verifyOtp = async (req, res) => {
             if (!userA.redeemedUsers) {
               userA.redeemedUsers = [];
             }
-            if (!userA.redeemedUsers.some(id => id.toString() === newUser._id.toString())) {
+            if (
+              !userA.redeemedUsers.some(
+                (id) => id.toString() === newUser._id.toString()
+              )
+            ) {
               userA.redeemedUsers.push(newUser._id);
             }
 
             // STEP 5: Save User A changes
             await userA.save();
-            console.log("✅ User A's account updated with wallet reference and redeemed users");
+            console.log(
+              "✅ User A's account updated with wallet reference and redeemed users"
+            );
 
             console.log("\n🎉 REFERRAL REWARD COMPLETE!");
-            console.log(`   User A (${userA.name}) received ₹${REFERRAL_REWARD}`);
+            console.log(
+              `   User A (${userA.name}) received ₹${REFERRAL_REWARD}`
+            );
             console.log(`   Total balance: ₹${walletDoc.balance}`);
             console.log(`   Total referrals: ${userA.redeemedUsers.length}\n`);
 
@@ -495,7 +525,7 @@ const verifyOtp = async (req, res) => {
         console.error("❌ Session save error:", err);
         return res.status(500).json({
           success: false,
-          message: "Session error. Please try logging in."
+          message: "Session error. Please try logging in.",
         });
       }
 
@@ -505,20 +535,18 @@ const verifyOtp = async (req, res) => {
       return res.json({
         success: true,
         redirectUrl: "/",
-        message: rewardMessage
+        message: rewardMessage,
       });
     });
-
   } catch (error) {
     console.error("❌ verifyOtp error:", error);
     console.error("Stack trace:", error.stack);
     return res.status(500).json({
       success: false,
-      message: "An error occurred. Please try again."
+      message: "An error occurred. Please try again.",
     });
   }
 };
-
 
 const resendOtp = async (req, res) => {
   try {
@@ -786,8 +814,11 @@ const filterProduct = async (req, res) => {
       query,
     } = req.query;
 
-    const categories = await Category.find({ isListed: true ,isDeleted: false,});
-    const brands = await Brand.find({ isListed: true ,isDeleted: false,});
+    const categories = await Category.find({
+      isListed: true,
+      isDeleted: false,
+    });
+    const brands = await Brand.find({ isListed: true, isDeleted: false });
 
     const listedCategoryIds = categories.map((category) => category._id);
     const listedBrandIds = brands.map((brand) => brand._id);
@@ -849,7 +880,7 @@ const filterProduct = async (req, res) => {
       .populate("brand")
       .populate("category");
 
-      // Fetch active offers
+    // Fetch active offers
     const currentDate = new Date();
     const offers = await Offer.find({
       $or: [
@@ -927,7 +958,6 @@ const filterProduct = async (req, res) => {
       };
     });
 
-
     const queryParams = {
       query: query || undefined,
       category: category || undefined,
@@ -939,7 +969,7 @@ const filterProduct = async (req, res) => {
 
     res.render("shop", {
       user: userData,
-      products:productsWithOffers,
+      products: productsWithOffers,
       category: categories,
       brand: brands,
       selectedCategory: category || "",
@@ -970,12 +1000,10 @@ const updatePassword = async (req, res) => {
     }
 
     if (newPassword !== confirmPassword) {
-      return res
-        .status(400)
-        .json({
-          success: false,
-          message: "New password and confirmation do not match",
-        });
+      return res.status(400).json({
+        success: false,
+        message: "New password and confirmation do not match",
+      });
     }
 
     if (!req.session.user) {
@@ -1061,12 +1089,10 @@ const addTocart = async (req, res) => {
     res.status(200).json({ status: true, message: "Product added to cart" });
   } catch (error) {
     console.error("Error adding to cart:", error);
-    res
-      .status(500)
-      .json({
-        status: false,
-        message: "An error occurred while adding to cart",
-      });
+    res.status(500).json({
+      status: false,
+      message: "An error occurred while adding to cart",
+    });
   }
 };
 

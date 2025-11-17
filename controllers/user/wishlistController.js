@@ -4,7 +4,7 @@ const Wishlist = require("../../models/wishlistSchema");
 const Brand = require("../../models/brandSchema");
 const Cart = require("../../models/cartSchema");
 const User = require("../../models/userSchema");
-const Offer = require('../../models/offerSchema')
+const Offer = require("../../models/offerSchema");
 
 const loadwishlist = async (req, res) => {
   try {
@@ -30,71 +30,79 @@ const loadwishlist = async (req, res) => {
       populate: [{ path: "category" }, { path: "brand" }],
     });
 
-   // Fetch active product-specific and category-specific offers
-        const currentDate = new Date();
-        const offers = await Offer.find({
-            $or: [
-                {
-                    "productItem.endDate": { $gt: currentDate },
-                    "productItem.startDate": { $lte: currentDate },
-                },
-                {
-                    "categoryItem.endDate": { $gt: currentDate },
-                    "categoryItem.startDate": { $lte: currentDate },
-                },
-            ],
-        });
+    // Fetch active product-specific and category-specific offers
+    const currentDate = new Date();
+    const offers = await Offer.find({
+      $or: [
+        {
+          "productItem.endDate": { $gt: currentDate },
+          "productItem.startDate": { $lte: currentDate },
+        },
+        {
+          "categoryItem.endDate": { $gt: currentDate },
+          "categoryItem.startDate": { $lte: currentDate },
+        },
+      ],
+    });
 
-        const rawItems = wishlistData ? wishlistData.Product.filter(i => i.productId) : [];
+    const rawItems = wishlistData
+      ? wishlistData.Product.filter((i) => i.productId)
+      : [];
 
-        const productsWithOffers = rawItems.map(({ productId: product }) => {
-            let applicableOffer = null;
-            let maxDiscount = 0;
-            let discountedPrice = product.salePrice;
+    const productsWithOffers = rawItems.map(({ productId: product }) => {
+      let applicableOffer = null;
+      let maxDiscount = 0;
+      let discountedPrice = product.salePrice;
 
-            offers.forEach(offer => {
-                // Product-specific offer
-                offer.productItem.forEach(pi => {
-                    if (
-                        pi.product.toString() === product._id.toString() &&
-                        new Date(pi.startDate) <= currentDate &&
-                        new Date(pi.endDate) > currentDate &&
-                        pi.discount > maxDiscount
-                    ) {
-                        maxDiscount = pi.discount;
-                        applicableOffer = { discount: pi.discount, offerName: pi.offerName, type: "Product Offer" };
-                        discountedPrice = product.salePrice * (1 - pi.discount / 100);
-                    }
-                });
-
-                // Category-specific offer
-                offer.categoryItem.forEach(ci => {
-                    if (
-                        ci.category.toString() === product.category?._id.toString() &&
-                        new Date(ci.startDate) <= currentDate &&
-                        new Date(ci.endDate) > currentDate &&
-                        ci.discount > maxDiscount
-                    ) {
-                        maxDiscount = ci.discount;
-                        applicableOffer = { discount: ci.discount, offerName: ci.offerName, type: "Category Offer" };
-                        discountedPrice = product.salePrice * (1 - ci.discount / 100);
-                    }
-                });
-            });
-
-            return {
-                ...product.toObject(),
-                offer: applicableOffer,
-                discountedPrice: Math.round(discountedPrice * 100) / 100,
+      offers.forEach((offer) => {
+        // Product-specific offer
+        offer.productItem.forEach((pi) => {
+          if (
+            pi.product.toString() === product._id.toString() &&
+            new Date(pi.startDate) <= currentDate &&
+            new Date(pi.endDate) > currentDate &&
+            pi.discount > maxDiscount
+          ) {
+            maxDiscount = pi.discount;
+            applicableOffer = {
+              discount: pi.discount,
+              offerName: pi.offerName,
+              type: "Product Offer",
             };
+            discountedPrice = product.salePrice * (1 - pi.discount / 100);
+          }
         });
 
-        const cart = await Cart.findOne({ userId });
-        const cartProductIds = cart
-            ? cart.items.map((item) => item.productId.toString())
-            : [];
+        // Category-specific offer
+        offer.categoryItem.forEach((ci) => {
+          if (
+            ci.category.toString() === product.category?._id.toString() &&
+            new Date(ci.startDate) <= currentDate &&
+            new Date(ci.endDate) > currentDate &&
+            ci.discount > maxDiscount
+          ) {
+            maxDiscount = ci.discount;
+            applicableOffer = {
+              discount: ci.discount,
+              offerName: ci.offerName,
+              type: "Category Offer",
+            };
+            discountedPrice = product.salePrice * (1 - ci.discount / 100);
+          }
+        });
+      });
 
-    
+      return {
+        ...product.toObject(),
+        offer: applicableOffer,
+        discountedPrice: Math.round(discountedPrice * 100) / 100,
+      };
+    });
+
+    const cart = await Cart.findOne({ userId });
+    const cartProductIds = cart
+      ? cart.items.map((item) => item.productId.toString())
+      : [];
 
     res.render("wishlist", {
       user: userData,
@@ -189,12 +197,11 @@ const removeFromWishlist = async (req, res) => {
     }
 
     await Wishlist.updateOne({ userId }, { $pull: { Product: { productId } } });
-     await User.findByIdAndUpdate(
+    await User.findByIdAndUpdate(
       userId,
       { $pull: { wishlist: productId } },
       { new: true }
     );
-
 
     res.status(200).json({ message: "Product removed from wishlist" });
   } catch (error) {
@@ -202,8 +209,6 @@ const removeFromWishlist = async (req, res) => {
     res.status(500).json({ message: "An error occurred" });
   }
 };
-
-
 
 module.exports = {
   loadwishlist,
